@@ -2,129 +2,309 @@ import os
 import pandas as pd
 import numpy as np
 from sklearn import metrics
+import time
+
 
 # Change working directory to the data files containing folder
 os.chdir(
     "/home/sietsmarj/Documents/School/Master_DSLS/Final_Thesis/Initial_Data_exploration")
 
-# Load in training data
-var_train_res = pd.read_csv("train_results.txt", sep='\t', header=0)
-var_train_res.columns = ["chr", "pos", "ref", "alt", "gene", "csq1", "cadd",
-                         "capice", "pred", "combpred"]
-var_train_lable = pd.read_csv("train.txt", sep='\t', header=0)
-var_train_lable.columns = ["chr", "pos", "ref", "alt", "csq2", "maf", "label"]
 
-# Merging and deleting
-capice_train = pd.merge(var_train_res, var_train_lable)
-capice_train_nrows = capice_train.shape[0]
-print("Train dataset NaN counting.")
-for nan in capice_train.columns:
-    try:
-        print(f"Column {nan}: {capice_train[nan].isna().sum()}"
-              f" of the {capice_train_nrows}."
-              f" Which is: {capice_train[nan].isna().sum() / capice_train_nrows * 100} %")
-    except TypeError:
-        continue
-del (var_train_lable, var_train_res)
+class PerGene:
+    def __init__(self):
+        self.execute()
 
-# Labeling
-capice_train['src'] = 'CAPICE_train'
+    def execute(self):
+        # Load in training data
+        var_train_res = pd.read_csv("train_results.txt", sep='\t', header=0)
+        var_train_res.columns = ["chr", "pos", "ref", "alt", "gene", "csq1", "cadd",
+                                 "capice", "pred", "combpred"]
+        var_train_lable = pd.read_csv("train.txt", sep='\t', header=0)
+        var_train_lable.columns = ["chr", "pos", "ref", "alt", "csq2", "maf", "label"]
 
-# Loading in the test data
-var_test = pd.read_csv('test_results.txt', sep='\t', header=0)
-var_test.columns = ["chr", "pos", "ref", "alt", "maf", "csq3", "label", "revel",
-                    "clinpred", "sift", "provean", "cadd", "fathmm", "capice",
-                    "ponp2"]
-vart_test_nrows = var_test.shape[0]
-print("Test dataset NaN counting.")
-for nan in var_test.columns:
-    print(f"Column {nan}: {var_test[nan].isna().sum()}"
-          f" of the {vart_test_nrows}."
-          f" Which is: {var_test[nan].isna().sum() / vart_test_nrows * 100} %")
-var_test['src'] = 'CAPICE_test'
+        # Merging and deleting
+        capice_train = pd.merge(var_train_res, var_train_lable)
+        capice_train_nrows = capice_train.shape[0]
+        print("Train dataset NaN counting.")
+        for nan in capice_train.columns:
+            try:
+                print(f"Column {nan}: {capice_train[nan].isna().sum()}"
+                      f" of the {capice_train_nrows}."
+                      f" Which is: {capice_train[nan].isna().sum() / capice_train_nrows * 100} %")
+            except TypeError:
+                continue
+        del (var_train_lable, var_train_res)
 
-capice = capice_train[
-    ["chr", "pos", "ref", "alt", "src", "label", "capice"]].append(
-    var_test[["chr", "pos", "ref", "alt", "src", "label", "capice"]])
-del (capice_train, var_test)
+        # Labeling
+        capice_train['src'] = 'CAPICE_train'
 
-vkgl_labels = pd.read_csv("VKGL_14nov2019.txt", sep='\t', header=0)
-vkgl_labels.columns = ["variant", "chr", "pos", "ref", "alt", "cdna", "protein",
-                       "transcript", "hgvs", "gene", "label", "nrlabs"]
-vkgl_res = pd.read_csv("VKGL_14nov2019_capice.txt", sep='\t', header=0)
-vkgl_res.columns = ["chr", "pos", "ref", "alt", "csq4", "capice"]
-vkgl = pd.merge(vkgl_res, vkgl_labels)
-vkgl_nrows = vkgl.shape[0]
-print("VKGL dataset NaN counting.")
-for nan in vkgl.columns:
-    print(f"Column {nan}: {vkgl[nan].isna().sum()}"
-          f" of the {vkgl_nrows}."
-          f" Which is: {vkgl[nan].isna().sum() / vkgl_nrows * 100} %")
-vkgl['src'] = 'VKGL_14nov2019'
+        # Loading in the test data
+        var_test = pd.read_csv('test_results.txt', sep='\t', header=0)
+        var_test.columns = ["chr", "pos", "ref", "alt", "maf", "csq3", "label", "revel",
+                            "clinpred", "sift", "provean", "cadd", "fathmm", "capice",
+                            "ponp2"]
+        vart_test_nrows = var_test.shape[0]
+        print("Test dataset NaN counting.")
+        for nan in var_test.columns:
+            print(f"Column {nan}: {var_test[nan].isna().sum()}"
+                  f" of the {vart_test_nrows}."
+                  f" Which is: {var_test[nan].isna().sum() / vart_test_nrows * 100} %")
+        var_test['src'] = 'CAPICE_test'
 
-del (vkgl_labels, vkgl_res)
+        capice = capice_train[
+            ["chr", "pos", "ref", "alt", "src", "label", "capice"]].append(
+            var_test[["chr", "pos", "ref", "alt", "src", "label", "capice"]])
+        del (capice_train, var_test)
 
-overlap_capice = pd.merge(vkgl, capice, on=['chr', 'pos', 'ref', 'alt'])[
-    ['chr', 'pos', 'ref', 'alt']]
-temp_not_overlap = pd.merge(vkgl, overlap_capice,
-                            on=['chr', 'pos', 'ref', 'alt'], how='outer',
-                            indicator=True)
-vkgl1NIC = temp_not_overlap[temp_not_overlap['_merge'] == 'left_only']
-vkgl1IC = pd.merge(vkgl, overlap_capice, on=['chr', 'pos', 'ref', 'alt'])
+        vkgl_labels = pd.read_csv("VKGL_14nov2019.txt", sep='\t', header=0)
+        vkgl_labels.columns = ["variant", "chr", "pos", "ref", "alt", "cdna", "protein",
+                               "transcript", "hgvs", "gene", "label", "nrlabs"]
+        vkgl_res = pd.read_csv("VKGL_14nov2019_capice.txt", sep='\t', header=0)
+        vkgl_res.columns = ["chr", "pos", "ref", "alt", "csq4", "capice"]
+        vkgl = pd.merge(vkgl_res, vkgl_labels)
+        vkgl_nrows = vkgl.shape[0]
+        print("VKGL dataset NaN counting.")
+        for nan in vkgl.columns:
+            print(f"Column {nan}: {vkgl[nan].isna().sum()}"
+                  f" of the {vkgl_nrows}."
+                  f" Which is: {vkgl[nan].isna().sum() / vkgl_nrows * 100} %")
+        vkgl['src'] = 'VKGL_14nov2019'
 
-del (overlap_capice, temp_not_overlap)
+        del (vkgl_labels, vkgl_res)
 
-all = capice[["chr", "pos", "ref", "alt", "src", "label", "capice"]].append(
-    vkgl1NIC[["chr", "pos", "ref", "alt", "src", "label", "capice"]]
-)
-del (vkgl1NIC, vkgl1IC)
+        overlap_capice = pd.merge(vkgl, capice, on=['chr', 'pos', 'ref', 'alt'])[
+            ['chr', 'pos', 'ref', 'alt']]
+        temp_not_overlap = pd.merge(vkgl, overlap_capice,
+                                    on=['chr', 'pos', 'ref', 'alt'], how='outer',
+                                    indicator=True)
+        vkgl1NIC = temp_not_overlap[temp_not_overlap['_merge'] == 'left_only']
+        vkgl1IC = pd.merge(vkgl, overlap_capice, on=['chr', 'pos', 'ref', 'alt'])
 
-exons = pd.read_csv("Ensembl_GRCh37_ExonRegions.txt", sep='\t', header=0)
+        del (overlap_capice, temp_not_overlap)
 
-var_res = pd.read_csv("train_results.txt", header=0, sep='\t')
-var_inp = pd.read_csv("train.txt", header=0, sep='\t')
+        all = capice[["chr", "pos", "ref", "alt", "src", "label", "capice"]].append(
+            vkgl1NIC[["chr", "pos", "ref", "alt", "src", "label", "capice"]]
+        )
+        del (vkgl1NIC, vkgl1IC)
 
-# print(var_res, '\n', "______________", '\n', var_inp)
+        exons = pd.read_csv("Ensembl_GRCh37_ExonRegions.txt", sep='\t', header=0)
 
-var_res = var_res[['chr', 'pos', 'ref', 'alt', 'GeneName', 'prediction']]
-var_inp = var_inp[['#Chrom', 'Pos', 'Ref', 'Alt', 'label']]
+        var_res = pd.read_csv("train_results.txt", header=0, sep='\t')
+        var_inp = pd.read_csv("train.txt", header=0, sep='\t')
 
-var_comb = pd.merge(var_res, var_inp, left_on=['chr', 'pos', 'ref', 'alt'],
-                    right_on=['#Chrom', 'Pos', 'Ref', 'Alt'])
+        # print(var_res, '\n', "______________", '\n', var_inp)
 
-var_comb = var_comb.drop(['#Chrom', 'Pos', 'Ref', 'Alt'], axis=1)
+        var_res = var_res[['chr', 'pos', 'ref', 'alt', 'GeneName', 'prediction']]
+        var_inp = var_inp[['#Chrom', 'Pos', 'Ref', 'Alt', 'label']]
 
-var_comb['prediction'] = var_comb['prediction'].replace({"Pathogenic":1,"Neutral":0})
+        var_comb = pd.merge(var_res, var_inp, left_on=['chr', 'pos', 'ref', 'alt'],
+                            right_on=['#Chrom', 'Pos', 'Ref', 'Alt'])
 
-var_comb['label'] = var_comb['label'].replace({"LP/P":1,"LB/B":0})
+        # var_comb = var_comb.drop(['#Chrom', 'Pos', 'Ref', 'Alt'], axis=1)
+        var_comb = var_comb.drop(['Ref', 'Alt'], axis=1)
 
-overview = pd.DataFrame(0, np.arange(1), columns=['Gene', 'AUC', 'FPR', 'Precision',
-                                 'Recall/TPR', 'F-score', 'N_benign',
-                                                  'N_malign'])
+        var_comb['prediction'] = var_comb['prediction'].replace({"Pathogenic":1,"Neutral":0})
+
+        var_comb['label'] = var_comb['label'].replace({"LP/P":1,"LB/B":0})
+
+        overview = pd.DataFrame(columns=['Gene', 'AUC', 'FPR', 'Precision',
+                                         'Recall/TPR', 'F-score', 'N_benign',
+                                                          'N_malign', 'm_cat',
+                                                          'n_snvs'])
+
+        time_before_whileloop = time.time()
+        total_genes = var_comb['GeneName'].unique().shape[0]
+        done_genes = 0
+
+        time_forloop_started = time.time()
+        for genename in var_comb['GeneName'].unique():
+            time_in_whileloop = time.time()
+            if time_in_whileloop - time_before_whileloop > 10:
+                print(f"I'm still running, I've been running for: "
+                      f"{round(divmod(time_in_whileloop - time_forloop_started, 60)[0])}"
+                      f" minutes and "
+                      f"{round(divmod(time_in_whileloop - time_forloop_started, 60)[1])}"
+                      f" seconds.")
+                print(f'\n'
+                      f'Done {round(done_genes/total_genes*100, ndigits=2)} %. \n')
+                time_before_whileloop = time.time()
+            subset_data = var_comb[var_comb['GeneName'] == genename]
+            exon_subset = exons[exons['gene'] == genename]
+            n_snvs = subset_data['GeneName'].count()
+            y_true = np.array(subset_data['label'])
+            y_pred = np.array(subset_data['prediction'])
+            has_m_cat = None
+            if len(set(y_true)) > 1 and len(set(y_pred)) > 1:
+                auc = metrics.roc_auc_score(y_true, y_pred)
+                precision = metrics.precision_score(y_true, y_pred)
+                recall = metrics.recall_score(y_true, y_pred, zero_division=0)
+                fpr = 1 - recall
+                f_score = metrics.f1_score(y_true, y_pred)
+                has_m_cat = 1
+            else:
+                auc = np.NaN
+                precision = np.NaN
+                recall = np.NaN
+                fpr = np.NaN
+                f_score = np.NaN
+                has_m_cat = 0
+            n_benign = subset_data[subset_data['label'] == 0]['label'].count()
+            n_malign = subset_data[subset_data['label'] == 1]['label'].count()
+
+            row = pd.DataFrame({'Gene': [genename], 'AUC': [auc], 'FPR': [fpr],
+                                'Precision': [precision], 'Recall/TPR': [recall],
+                                'F-score': [f_score], 'N_benign': [n_benign],
+                                'N_malign': [n_malign], 'm_cat': [has_m_cat],
+                                     'n_snvs':[n_snvs]})
+            overview = overview.append(row, ignore_index=True)
+            done_genes += 1
+
+        overview.to_csv("auc_results.csv")
 
 
-for genename in var_comb['GeneName'].unique():
-    subset_data = var_comb[var_comb['GeneName'] == genename]
-    y_true = np.array(subset_data['label'])
-    y_pred = np.array(subset_data['prediction'])
-    if len(set(y_true)) > 1 and len(set(y_pred)) > 1:
-        auc = metrics.roc_auc_score(y_true, y_pred)
-    else:
-        auc = np.NaN
-    precision = metrics.precision_score(y_true, y_pred)
-    recall = metrics.recall_score(y_true, y_pred, zero_division=0)
-    fpr = 1-recall
-    f_score = metrics.f1_score(y_true, y_pred)
-    n_benign = subset_data[subset_data['label'] == 0]['label'].count()
-    n_malign = subset_data[subset_data['label'] == 1]['label'].count()
-    # //TODO: add has_m_cat as metric (0=no, 1=yes)
+class PerSNV:
+    def __init__(self):
+        self.execute()
 
-    row = pd.DataFrame(index=np.arange(1),
-                       data={'Gene': genename, 'AUC': auc, 'FPR': fpr,
-                        'Precision': precision, 'Recall/TPR': recall,
-                        'F-score': f_score, 'N_benign': n_benign,
-                        'N_malign': n_malign})
-    overview = overview.append(row, ignore_index=True)
-print(overview)
-overview = overview.drop(0)
-overview.to_csv("auc_results.csv")
+    def execute(self):
+        test_dataset = pd.read_csv("test_results.txt", sep='\t', header=0)
+        test_dataset['gene'] = np.NaN
+        genes = pd.read_csv('agilent_compressed.csv', header=0, index_col=0)
+        time_before_whileloop = time.time()
+        total_rows = genes.shape[0]
+        done_rows = 0
+        time_forloop_started = time.time()
+        for gene in genes.iterrows():
+            time_in_whileloop = time.time()
+            if time_in_whileloop - time_before_whileloop > 10:
+                print(f"I'm still running, I've been running for: "
+                      f"{round(divmod(time_in_whileloop - time_forloop_started, 60)[0])}"
+                      f" minutes and "
+                      f"{round(divmod(time_in_whileloop - time_forloop_started, 60)[1])}"
+                      f" seconds.")
+                print(f'Done {round(done_rows/total_rows*100, ndigits=2)} %.')
+                time_before_whileloop = time.time()
+            gene = gene[1]
+            subset_chr = test_dataset[test_dataset['#Chrom'] == gene['chr']]
+            subset_min = subset_chr[subset_chr['Pos'] >= gene['start']]
+            full_subset = subset_min[subset_min['Pos'] <= gene['stop']]
+            if full_subset.shape[0] > 0:
+                test_dataset.loc[full_subset.index, 'gene'] = gene['gene']
+            done_rows += 1
+        test_dataset.to_csv("test_results_with_genes.csv")
+
+
+class ApplyAUCPerGene:
+    def __init__(self):
+        self._execute()
+
+    def _execute(self):
+        auc_data = pd.read_csv('auc_results.csv', header=0, index_col=0)
+        test_data_genes = pd.read_csv('test_results_with_genes.csv', header=0,
+                                      index_col=0)
+        auc_data = auc_data[['Gene', 'AUC']]
+        auc_data.columns = ['gene', 'auc']
+        auc_data_merged = test_data_genes.merge(auc_data, left_on=['gene'], right_on=['gene'])
+        auc_data_merged.to_csv('test_results_genes_auc.csv')
+
+
+class CompressGenes:
+    def __init__(self):
+        self._execute()
+
+    def _execute(self):
+        better_genes = pd.DataFrame(columns=['chr', 'start', 'stop', 'gene'])
+        genes = pd.read_csv('Agilent_Exoom_v3_human_g1k_v37_captured.merged.genesplit.bed', sep='\t', header=0)
+        genes = genes.drop(genes.index[genes.shape[0]-1])
+        curr_gene = None
+        still_gene = False
+        min_curr = None
+        max_curr = None
+        time_before_whileloop = time.time()
+        total_rows = genes.shape[0]
+        done_rows = 0
+        time_forloop_started = time.time()
+        for gene in genes.iterrows():
+            time_in_whileloop = time.time()
+            if time_in_whileloop - time_before_whileloop > 10:
+                print(f"I'm still running, I've been running for: "
+                      f"{round(divmod(time_in_whileloop - time_forloop_started, 60)[0])}"
+                      f" minutes and "
+                      f"{round(divmod(time_in_whileloop - time_forloop_started, 60)[1])}"
+                      f" seconds.")
+                print(f'Done {round(done_rows/total_rows*100, ndigits=2)} %.')
+                time_before_whileloop = time.time()
+            gene = gene[1]
+            if not curr_gene:
+                curr_gene = gene['gene']
+            if curr_gene == gene['gene']:
+                still_gene = True
+            else:
+                better_genes = better_genes.append(pd.DataFrame(
+                    {'chr': [gene['chr']], 'start': [min_curr],
+                     'stop': [max_curr], 'gene': [curr_gene]}))
+                still_gene = False
+                min_curr = None
+                max_curr = None
+                curr_gene = gene['gene']
+            if not min_curr and not max_curr:
+                min_curr = gene['start']
+                max_curr = gene['end']
+
+            if still_gene:
+                min_row = gene['start']
+                max_row = gene['end']
+                if min_row < min_curr:
+                    min_curr = min_row
+                elif max_row < min_curr:
+                    min_curr = max_row
+
+                if max_row > max_curr:
+                    max_curr = max_row
+                elif min_row > max_curr:
+                    max_curr = min_row
+            done_rows += 1
+
+        better_genes.to_csv("agilent_compressed.csv")
+
+
+class IntronicExonic:
+    def __init__(self):
+        self._execute()
+
+    def _execute(self):
+        data = pd.read_csv('test_results_genes_auc.csv', header=0, index_col=0)
+        data['exonic'] = 0
+        full_genes_data = pd.read_csv('Agilent_Exoom_v3_human_g1k_v37_captured.merged.genesplit.bed', sep='\t', header=0)
+        reset_timer = time.time()
+        total_rows = data.shape[0]
+        done_rows = 0
+        time_fls = time.time()
+        for row in data.iterrows():
+            time_ifl = time.time()
+            if time_ifl - reset_timer > 10:
+                print(f"I'm still running, I've been running for: "
+                      f"{round(divmod(time_ifl - time_fls, 60)[0])}"
+                      f" minutes and "
+                      f"{round(divmod(time_ifl - time_fls, 60)[1])}"
+                      f" seconds.")
+                print(f'Done {round(done_rows/total_rows*100, ndigits=2)} %.')
+                reset_timer = time.time()
+            index = row[0]
+            row = row[1]
+            subset_genes_chr = full_genes_data[full_genes_data['chr'] ==
+                                           row['#Chrom']]
+            subset_genes_gene = subset_genes_chr[subset_genes_chr['gene'] ==
+                                        row['gene']]
+            subset_genes_min = subset_genes_gene[subset_genes_gene['start'] <=
+                                        row['Pos']]
+            subset_genes_max = subset_genes_min[subset_genes_min['end'] >=
+                                        row['Pos']]
+            if subset_genes_max.shape[0] > 0:
+                data.loc[index, 'exonic'] = 1
+            done_rows += 1
+        data.to_csv('test_results_genes_auc_exonic.csv')
+
+
+if __name__ == "__main__":
+    IntronicExonic()
