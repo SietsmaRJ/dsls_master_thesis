@@ -322,7 +322,7 @@ class MultiProcess:
                                  manager_list=None, ignore_warn=True):
         """
         Method to map a dataset containing the columns 'capice', 'label' and
-        gene to calculate an optimal AUC,
+        'gene' to calculate an optimal AUC,
          starting from 0.02 and lowering / increasing from there,
          starting with decreasing.
         Note: method is not case sensitive
@@ -342,23 +342,28 @@ class MultiProcess:
         Returns
         -------
             optimal: pandas.DataFrame
-                A 1 by 4 pandas dataframe containing (1st column) the gene name,
+                A 1 by 8 pandas dataframe containing:
+                 (1st column) the gene name,
                  (2nd column) the AUC of CAPICE cutoff 0.02,
-                (3rd column) optimal CAPICE cutoff and (4th column) the AUC of
-                 the optimal cutoff.
+                 (3rd column) optimal CAPICE cutoff,
+                 (4th column) the AUC of the optimal cutoff,
+                 (5th column) the improvement of AUC,
+                 (6th column) the total amount of SNVs of that gene,
+                 (7th column) the total amount of benign SNVs of that gene and
+                 (8th column) the total amount of malignant SNVs of that gene.
                 Columns will be called 'gene', 'default_auc', 'optimal_c',
-                 'optimal_auc'.
+                 'optimal_auc', 'improved', 'n_tot', 'n_benign', 'n_malign'.
                  Keep in mind that the cutoff is greater than for pathogenic.
         """
 
         # Check if ignore_warn is actually a boolean
         if not isinstance(ignore_warn, bool):
-            raise IOError('ignore_warn must be a boolean.')
+            raise AttributeError('ignore_warn must be a boolean.')
 
         # Check if input is a pandas dataframe.
         if not isinstance(dataset, pd.DataFrame):
             if not ignore_warn:
-                raise IOError(
+                raise AttributeError(
                     f'The input is not a pandas dataframe, instead is:'
                     f' {type(dataset)}')
             else:
@@ -393,7 +398,7 @@ class MultiProcess:
         # Finally, checking if there's only 1 gene.
         if not isinstance(gene, str):
             if not ignore_warn:
-                raise ValueError('Gene is not a string!')
+                raise AttributeError('Gene is not a string!')
             else:
                 return None
 
@@ -471,10 +476,20 @@ class MultiProcess:
         if auc_default == auc_value:
             adapted_auc_threshold = 0.02
 
+        # Some extra usefull statistics.
+        n_tot = dataset['label'].size
+        n_benign = dataset[dataset['label'] == 0]['label'].size
+        n_malign = n_tot - n_benign
+        improved = auc_value - auc_default
+
         # Generating output.
         output = pd.DataFrame({'gene': gene, 'default_auc': auc_default,
                                'optimal_c': adapted_auc_threshold,
-                               'optimal_auc': auc_value}, index=[0])
+                               'optimal_auc': auc_value,
+                               'improved': improved,
+                               'n_tot': n_tot,
+                               'n_benign': n_benign,
+                               'n_malign': n_malign}, index=[0])
 
         # Providing the result to the manager list.
         if manager_list is not None:
@@ -535,7 +550,9 @@ class MultiProcess:
             p.join()
 
         overview = pd.DataFrame(columns=['gene', 'default_auc',
-                                         'optimal_c', 'optimal_auc'])
+                                         'optimal_c', 'optimal_auc',
+                                         'improved', 'n_tot',
+                                         'n_benign', 'n_malign'])
         for result in L:
             overview = overview.append(result, ignore_index=True)
 
