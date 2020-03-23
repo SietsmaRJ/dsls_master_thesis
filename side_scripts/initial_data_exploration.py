@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn import metrics
 import time
-from multiprocessing import Process, Queue, Manager
+from multiprocessing import Process, Manager
 from sklearn.metrics import roc_auc_score
 
 
@@ -313,24 +313,27 @@ class MultiProcess:
         self.data = pd.read_csv('/home/rjsietsma/Documents/School/'
                                 'Master_DSLS/Final_Thesis/'
                                 'Initial_Data_exploration/'
-                                'test_results_genes_auc_exonic.csv',
-                                header=0, index_col=0)
+                                'merged_train.csv',
+                                header=0)
         self.execute(self.data)
 
     # Let's define a function that would be called by multiprocessing
-    def map_optimal_auc_per_gene(self, dataset,
+    def map_optimal_auc_per_gene(self, dataset, gene,
                                  manager_list=None, ignore_warn=True):
         """
-        Method to map a dataset containing the columns 'capice' and 'label'
-        optimal AUC, starting from 0.02 and lowering / increasing from there,
+        Method to map a dataset containing the columns 'capice', 'label' and
+        gene to calculate an optimal AUC,
+         starting from 0.02 and lowering / increasing from there,
          starting with decreasing.
         Note: method is not case sensitive
 
         Parameters
         ----------
             dataset: pandas.DataFrame
-                A pandas dataframe containing the required columns to calculate
-                 an AUC to.
+                A pandas dataframe containing the required columns
+                 (being capice, gene and label) to calculate an AUC to.
+            gene: str
+                Gene name to subset the dataset to.
             manager_list: multiprocessing.Manager().list() (optional)
                 For multiprocessing purposes, added the option for Manager list.
             ignore_warn: bool (optional)
@@ -344,9 +347,10 @@ class MultiProcess:
                 (3rd column) optimal CAPICE cutoff and (4th column) the AUC of
                  the optimal cutoff.
                 Columns will be called 'gene', 'default_auc', 'optimal_c',
-                 'optimal_auc'
-
+                 'optimal_auc'.
+                 Keep in mind that the cutoff is greater than for pathogenic.
         """
+
         # Check if ignore_warn is actually a boolean
         if not isinstance(ignore_warn, bool):
             raise IOError('ignore_warn must be a boolean.')
@@ -387,11 +391,14 @@ class MultiProcess:
                     return None
 
         # Finally, checking if there's only 1 gene.
-        if dataset['gene'].unique().size > 1:
+        if not isinstance(gene, str):
             if not ignore_warn:
-                raise ValueError('There can only be 1 gene.')
+                raise ValueError('Gene is not a string!')
             else:
                 return None
+
+        # Sub setting the data.
+        dataset = dataset[dataset['gene'] == gene]
 
         # Checking if y_true (label) actually has multiple entries
         if dataset['label'].unique().size < 2:
@@ -414,6 +421,9 @@ class MultiProcess:
         upper_attempt = 0
         dataset_copy = dataset.copy()
         first_iter = True
+
+        # First, find a lower optimum.
+
         while check_lower_optimum:
             if first_iter:
                 adapted_auc_threshold = auc_threshold_default
@@ -427,6 +437,7 @@ class MultiProcess:
             else:
                 if auc > auc_value:
                     auc_value = auc
+                    lower_attempt = 0
                 else:
                     lower_attempt += 1
                     if lower_attempt > max_attempts:
@@ -434,6 +445,8 @@ class MultiProcess:
                         check_upper_optimum = True
                         break
             first_iter = False
+
+        # Re-instance the dataset and try to find an upper optimum.
         dataset_copy = dataset.copy()
         first_iter = True
         while check_upper_optimum:
@@ -445,6 +458,7 @@ class MultiProcess:
             auc = self._calc_roc(dataset_copy, adapted_auc_threshold)
             if auc > auc_value:
                 auc_value = auc
+                upper_attempt = 0
             else:
                 upper_attempt += 1
                 if upper_attempt > max_attempts:
@@ -452,15 +466,31 @@ class MultiProcess:
                     check_upper_optimum = False
                     break
             first_iter = False
-        gene = dataset['gene'].unique()[0]
+
+        # If there is no new optimum, apply the default 0.02 threshold.
+        if auc_default == auc_value:
+            adapted_auc_threshold = 0.02
+
+        # Generating output.
         output = pd.DataFrame({'gene': gene, 'default_auc': auc_default,
                                'optimal_c': adapted_auc_threshold,
                                'optimal_auc': auc_value}, index=[0])
+
+        # Providing the result to the manager list.
         if manager_list is not None:
-            manager_list.append(output)
+            try:
+                manager_list.append(output)
+            # Since manager_list is an ProxyList object, which I can't check,
+            # excepting Exception.
+            except Exception:
+                if not ignore_warn:
+                    raise TypeError("Did not provide a (manager) list!")
+                else:
+                    return None
         return output
 
-    def _calc_roc(self, dataset, threshold):
+    @staticmethod
+    def _calc_roc(dataset, threshold):
         dataset.loc[
             dataset[dataset['capice'] > threshold].index,
             'capice'
@@ -496,10 +526,8 @@ class MultiProcess:
                     f"Still processing, done: "
                     f"{round(done / total * 100, ndigits=2)}%")
                 reset_timer = time.time()
-            dataset_copy = dataset.copy()
-            dataset_copy = dataset_copy[dataset_copy['gene'] == gene]
             p = Process(target=self.map_optimal_auc_per_gene,
-                        args=(dataset_copy, L,))
+                        args=(dataset, gene, L,))
             p.start()
             processes.append(p)
             done += 1
@@ -511,7 +539,10 @@ class MultiProcess:
         for result in L:
             overview = overview.append(result, ignore_index=True)
 
-        print(overview.sort_values(by=['optimal_auc'], ascending=False))
+        overview.to_csv('/home/rjsietsma/Documents/'
+                        'School/Master_DSLS/Final_Thesis/'
+                        'Initial_Data_exploration/optimal_auc_thresholds.csv',
+                        index=False)
 
 
 if __name__ == "__main__":
