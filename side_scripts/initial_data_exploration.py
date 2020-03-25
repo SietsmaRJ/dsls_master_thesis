@@ -4,12 +4,8 @@ import numpy as np
 from sklearn import metrics
 import time
 from multiprocessing import Process, Manager
-from sklearn.metrics import roc_auc_score
-
-
-# Change working directory to the data files containing folder
-# os.chdir(
-#     "/home/sietsmarj/Documents/School/Master_DSLS/Final_Thesis/Initial_Data_exploration")
+from sklearn.metrics import roc_auc_score, confusion_matrix, recall_score,\
+    f1_score
 
 
 class PerGene:
@@ -166,12 +162,15 @@ class PerGene:
 
 class PerSNV:
     def __init__(self):
+        # Change working directory to the data files containing folder
+        os.chdir("/home/rjsietsma/Documents/School/"
+                 "Master_DSLS/Final_Thesis/Initial_Data_exploration")
         self.execute()
 
     def execute(self):
         test_dataset = pd.read_csv("test_results.txt", sep='\t', header=0)
         test_dataset['gene'] = np.NaN
-        genes = pd.read_csv('agilent_compressed.csv', header=0, index_col=0)
+        genes = pd.read_csv('ensembl_compressed.csv', header=0, index_col=0)
         time_before_whileloop = time.time()
         total_rows = genes.shape[0]
         done_rows = 0
@@ -193,7 +192,7 @@ class PerSNV:
             if full_subset.shape[0] > 0:
                 test_dataset.loc[full_subset.index, 'gene'] = gene['gene']
             done_rows += 1
-        test_dataset.to_csv("test_results_with_genes.csv")
+        test_dataset.to_csv("test_results.csv")
 
 
 class ApplyAUCPerGene:
@@ -212,12 +211,15 @@ class ApplyAUCPerGene:
 
 class CompressGenes:
     def __init__(self):
+        # Change working directory to the data files containing folder
+        os.chdir("/home/rjsietsma/Documents/School/"
+                 "Master_DSLS/Final_Thesis/Initial_Data_exploration")
         self._execute()
 
     def _execute(self):
         better_genes = pd.DataFrame(columns=['chr', 'start', 'stop', 'gene'])
-        genes = pd.read_csv('Agilent_Exoom_v3_human_g1k_v37_captured.merged.genesplit.bed', sep='\t', header=0)
-        genes = genes.drop(genes.index[genes.shape[0]-1])
+        genes = pd.read_csv('Ensembl_GRCh37_ExonRegions.txt',
+                            sep='\t', header=0)
         curr_gene = None
         still_gene = False
         min_curr = None
@@ -267,7 +269,7 @@ class CompressGenes:
                     max_curr = min_row
             done_rows += 1
 
-        better_genes.to_csv("agilent_compressed.csv")
+        better_genes.to_csv("ensembl_compressed.csv")
 
 
 class IntronicExonic:
@@ -313,7 +315,7 @@ class MultiProcess:
         self.data = pd.read_csv('/home/rjsietsma/Documents/School/'
                                 'Master_DSLS/Final_Thesis/'
                                 'Initial_Data_exploration/'
-                                'merged_train.csv',
+                                'full_dataset.csv',
                                 header=0)
         self.execute(self.data)
 
@@ -344,15 +346,12 @@ class MultiProcess:
             optimal: pandas.DataFrame
                 A 1 by 8 pandas dataframe containing:
                  (1st column) the gene name,
-                 (2nd column) the AUC of CAPICE cutoff 0.02,
-                 (3rd column) optimal CAPICE cutoff,
-                 (4th column) the AUC of the optimal cutoff,
-                 (5th column) the improvement of AUC,
-                 (6th column) the total amount of SNVs of that gene,
-                 (7th column) the total amount of benign SNVs of that gene and
-                 (8th column) the total amount of malignant SNVs of that gene.
-                Columns will be called 'gene', 'default_auc', 'optimal_c',
-                 'optimal_auc', 'improved', 'n_tot', 'n_benign', 'n_malign'.
+                 (2-6 columns) statistics under default cutoff,
+                 (7th column) optimal CAPICE cutoff,
+                 (8-12 column) statistics under optimal cutoff,
+                 (13th column) the total amount of SNVs of that gene,
+                 (14th column) the total amount of benign SNVs of that gene and
+                 (15th column) the total amount of malignant SNVs of that gene.
                  Keep in mind that the cutoff is greater than for pathogenic.
         """
 
@@ -414,11 +413,25 @@ class MultiProcess:
                 return None
 
         # Now let the fun begin.
-        auc_threshold_default = 0.02
+        # Default values.
+        threshold_default = 0.02
         auc_default = None
+        f1_default = None
+        recall_default = None
+        fpr_default = None
+        specificity_default = None
+
+        # Optimal values.
+        final_threshold = None
+        auc_optimal = None
+        f1_optimal = None
+        recall_optimal = None
+        fpr_optimal = None
+        specificity_optimal = None
+
+        # While loop specific settings.
+        adapted_threshold = None
         stepsize = 0.001
-        adapted_auc_threshold = None
-        auc_value = None
         max_attempts = 3
         check_lower_optimum = True
         lower_attempt = 0
@@ -431,18 +444,27 @@ class MultiProcess:
 
         while check_lower_optimum:
             if first_iter:
-                adapted_auc_threshold = auc_threshold_default
+                adapted_threshold = threshold_default
             else:
-                adapted_auc_threshold = adapted_auc_threshold - stepsize
+                adapted_threshold = adapted_threshold - stepsize
                 dataset_copy = dataset.copy()
-            auc = self._calc_roc(dataset_copy, adapted_auc_threshold)
+            auc, f1, recall, fpr, specificity = \
+                self._calc_stats(dataset_copy, adapted_threshold)
             if first_iter:
+                final_threshold = threshold_default
                 auc_default = auc
-                auc_value = auc
+                f1_default = f1
+                recall_default = recall
+                fpr_default = fpr
+                specificity_default = specificity
+                auc_optimal = auc
+                f1_optimal = f1
             else:
-                if auc > auc_value:
-                    auc_value = auc
+                if f1 > f1_optimal:
+                    auc_optimal = auc
+                    f1_optimal = f1
                     lower_attempt = 0
+                    final_threshold = adapted_threshold
                 else:
                     lower_attempt += 1
                     if lower_attempt > max_attempts:
@@ -456,37 +478,58 @@ class MultiProcess:
         first_iter = True
         while check_upper_optimum:
             if first_iter:
-                adapted_auc_threshold = auc_threshold_default + stepsize
+                adapted_threshold = adapted_threshold + stepsize
             else:
-                adapted_auc_threshold = adapted_auc_threshold + stepsize
+                adapted_threshold = adapted_threshold + stepsize
                 dataset_copy = dataset.copy()
-            auc = self._calc_roc(dataset_copy, adapted_auc_threshold)
-            if auc > auc_value:
-                auc_value = auc
-                upper_attempt = 0
+            auc, f1, recall, fpr, specificity = \
+                self._calc_stats(dataset_copy, adapted_threshold)
+            if first_iter:
+                final_threshold = threshold_default
+                auc_default = auc
+                f1_default = f1
+                recall_default = recall
+                fpr_default = fpr
+                specificity_default = specificity
+                auc_optimal = auc
+                f1_optimal = f1
             else:
-                upper_attempt += 1
-                if upper_attempt > max_attempts:
-                    check_lower_optimum = False
-                    check_upper_optimum = False
-                    break
+                if f1 > f1_optimal:
+                    auc_optimal = auc
+                    f1_optimal = f1
+                    lower_attempt = 0
+                    final_threshold = adapted_threshold
+                else:
+                    lower_attempt += 1
+                    if lower_attempt > max_attempts:
+                        check_lower_optimum = False
+                        check_upper_optimum = False
+                        break
             first_iter = False
 
-        # If there is no new optimum, apply the default 0.02 threshold.
-        if auc_default == auc_value:
-            adapted_auc_threshold = 0.02
+        # Applying optimal scores.
+        recall_optimal = recall
+        fpr_optimal = fpr
+        specificity_optimal = specificity
 
         # Some extra usefull statistics.
         n_tot = dataset['label'].size
         n_benign = dataset[dataset['label'] == 0]['label'].size
         n_malign = n_tot - n_benign
-        improved = auc_value - auc_default
 
         # Generating output.
-        output = pd.DataFrame({'gene': gene, 'default_auc': auc_default,
-                               'optimal_c': adapted_auc_threshold,
-                               'optimal_auc': auc_value,
-                               'improved': improved,
+        output = pd.DataFrame({'gene': gene,
+                               'default_auc': auc_default,
+                               'default_f1': f1_default,
+                               'default_recall': recall_default,
+                               'default_fpr': fpr_default,
+                               'default_spec': specificity_default,
+                               'optimal_c': final_threshold,
+                               'optimal_auc': auc_optimal,
+                               'optimal_f1': f1_optimal,
+                               'optimal_recall': recall_optimal,
+                               'optimal_fpr': fpr_optimal,
+                               'optimal_spec': specificity_optimal,
                                'n_tot': n_tot,
                                'n_benign': n_benign,
                                'n_malign': n_malign}, index=[0])
@@ -505,7 +548,7 @@ class MultiProcess:
         return output
 
     @staticmethod
-    def _calc_roc(dataset, threshold):
+    def _calc_stats(dataset, threshold):
         dataset.loc[
             dataset[dataset['capice'] > threshold].index,
             'capice'
@@ -517,7 +560,11 @@ class MultiProcess:
         y_true = np.array(dataset['label'])
         y_pred = np.array(dataset['capice'])
         auc = roc_auc_score(y_true, y_pred)
-        return auc
+        f1 = f1_score(y_true, y_pred)
+        recall = recall_score(y_true, y_pred)
+        fpr = 1-recall
+        specificity = 1-fpr
+        return auc, f1, recall, fpr, specificity
 
     def execute(self, dataset):
         processes = []
@@ -549,16 +596,29 @@ class MultiProcess:
         for p in processes:
             p.join()
 
-        overview = pd.DataFrame(columns=['gene', 'default_auc',
-                                         'optimal_c', 'optimal_auc',
-                                         'improved', 'n_tot',
+        overview = pd.DataFrame(columns=['gene', 'default_auc', 'default_f1',
+                                         'default_recall', 'default_fpr',
+                                         'default_spec', 'optimal_c',
+                                         'optimal_auc', 'optimal_f1',
+                                         'optimal_recall', 'optimal_fpr',
+                                         'optimal_spec', 'n_tot',
                                          'n_benign', 'n_malign'])
+
+        total = len(L[:])
+        done = 0
+        reset_timer = time.time()
         for result in L:
+            time_fls = time.time()
+            if time_fls - reset_timer > 5:
+                print(
+                    f"Processing results, done: "
+                    f"{round(done / total * 100, ndigits=2)}%")
+                reset_timer = time.time()
             overview = overview.append(result, ignore_index=True)
 
         overview.to_csv('/home/rjsietsma/Documents/'
                         'School/Master_DSLS/Final_Thesis/'
-                        'Initial_Data_exploration/optimal_auc_thresholds.csv',
+                        'Initial_Data_exploration/optimal_f1_full_ds.csv',
                         index=False)
 
 
