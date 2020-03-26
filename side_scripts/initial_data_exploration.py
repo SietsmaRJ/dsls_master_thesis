@@ -437,17 +437,21 @@ class MultiProcess:
         lower_attempt = 0
         check_upper_optimum = False
         upper_attempt = 0
-        dataset_copy = dataset.copy()
         first_iter = True
+        switch_lower_upper = False
 
-        # First, find a lower optimum.
-
-        while check_lower_optimum:
+        # While looping to find optimum.
+        while check_lower_optimum or check_upper_optimum:
             if first_iter:
                 adapted_threshold = threshold_default
+            elif check_lower_optimum:
+                adapted_threshold -= stepsize
+            elif switch_lower_upper:
+                adapted_threshold = threshold_default + stepsize
+                switch_lower_upper = False
             else:
-                adapted_threshold = adapted_threshold - stepsize
-                dataset_copy = dataset.copy()
+                adapted_threshold += stepsize
+            dataset_copy = dataset.copy()
             auc, f1, recall, fpr, specificity = \
                 self._calc_stats(dataset_copy, adapted_threshold)
             if first_iter:
@@ -465,46 +469,16 @@ class MultiProcess:
                     f1_optimal = f1
                     lower_attempt = 0
                     final_threshold = adapted_threshold
-                else:
+                elif check_lower_optimum:
                     lower_attempt += 1
                     if lower_attempt > max_attempts:
                         check_lower_optimum = False
                         check_upper_optimum = True
-                        break
-            first_iter = False
-
-        # Re-instance the dataset and try to find an upper optimum.
-        dataset_copy = dataset.copy()
-        first_iter = True
-        while check_upper_optimum:
-            if first_iter:
-                adapted_threshold = adapted_threshold + stepsize
-            else:
-                adapted_threshold = adapted_threshold + stepsize
-                dataset_copy = dataset.copy()
-            auc, f1, recall, fpr, specificity = \
-                self._calc_stats(dataset_copy, adapted_threshold)
-            if first_iter:
-                final_threshold = threshold_default
-                auc_default = auc
-                f1_default = f1
-                recall_default = recall
-                fpr_default = fpr
-                specificity_default = specificity
-                auc_optimal = auc
-                f1_optimal = f1
-            else:
-                if f1 > f1_optimal:
-                    auc_optimal = auc
-                    f1_optimal = f1
-                    lower_attempt = 0
-                    final_threshold = adapted_threshold
+                        switch_lower_upper = True
                 else:
-                    lower_attempt += 1
-                    if lower_attempt > max_attempts:
-                        check_lower_optimum = False
+                    upper_attempt += 1
+                    if upper_attempt > max_attempts:
                         check_upper_optimum = False
-                        break
             first_iter = False
 
         # Applying optimal scores.
@@ -618,7 +592,7 @@ class MultiProcess:
 
         overview.to_csv('/home/rjsietsma/Documents/'
                         'School/Master_DSLS/Final_Thesis/'
-                        'Initial_Data_exploration/optimal_f1_full_ds.csv',
+                        'Initial_Data_exploration/optimal_f1_full_ds_v2.csv',
                         index=False)
 
 
