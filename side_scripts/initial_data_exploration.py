@@ -323,8 +323,8 @@ class MultiProcess:
     def map_optimal_auc_per_gene(self, dataset, gene,
                                  manager_list=None, ignore_warn=True):
         """
-        Method to map a dataset containing the columns 'capice', 'label' and
-        'gene' to calculate an optimal AUC,
+        Method to map a dataset containing the columns 'chr', 'capice',
+         'label' and 'gene' to calculate an optimal AUC,
          starting from 0.02 and lowering / increasing from there,
          starting with decreasing.
         Note: method is not case sensitive
@@ -345,13 +345,14 @@ class MultiProcess:
         -------
             optimal: pandas.DataFrame
                 A 1 by 8 pandas dataframe containing:
-                 (1st column) the gene name,
-                 (2-6 columns) statistics under default cutoff,
-                 (7th column) optimal CAPICE cutoff,
-                 (8-12 column) statistics under optimal cutoff,
-                 (13th column) the total amount of SNVs of that gene,
-                 (14th column) the total amount of benign SNVs of that gene and
-                 (15th column) the total amount of malignant SNVs of that gene.
+                 (1st column) the chomosome of the gene,
+                 (2nd column) the gene name,
+                 (3-7 columns) statistics under default cutoff,
+                 (8th column) optimal CAPICE cutoff,
+                 (9-13 column) statistics under optimal cutoff,
+                 (14th column) the total amount of SNVs of that gene,
+                 (15th column) the total amount of benign SNVs of that gene and
+                 (16th column) the total amount of malignant SNVs of that gene.
                  Keep in mind that the cutoff is greater than for pathogenic.
         """
 
@@ -370,7 +371,7 @@ class MultiProcess:
 
         # Check if required columns are present.
         columns = [c.lower() for c in dataset.columns.tolist()]
-        req_labels = ['gene', 'capice', 'label']
+        req_labels = ['chr', 'gene', 'capice', 'label']
         for label in req_labels:
             if label not in columns:
                 if not ignore_warn:
@@ -382,7 +383,9 @@ class MultiProcess:
         dataset.columns = columns
 
         # Final check of the column types.
-        req_dtypes = {'label': np.int64, 'capice': np.float64,
+        req_dtypes = {'chr': np.object,
+                      'label': np.int64,
+                      'capice': np.float64,
                       'gene': np.object}
         for i, dtype in enumerate(dataset[req_labels].dtypes):
             label = req_labels[i]
@@ -411,6 +414,22 @@ class MultiProcess:
                     'y_true (label) must contain at least 2 unique classes!')
             else:
                 return None
+
+        # Checking to apply the chromosome for the gene.
+        exclude_genes = ['Y-RNA', 'snoU13', 'Y_RNA',
+                         'SNORA43', 'SNORA73', 'U3', 'U6']
+        par_gene = 'SHOX'
+        if dataset['chr'].unique().shape[0] > 1:
+            if gene not in exclude_genes:
+                if gene == par_gene:
+                    chro = 'X'
+                else:
+                    chro = str(dataset['chr'].value_counts().sort_values(
+                        ascending=False)[0])
+            else:
+                chro = np.NaN
+        else:
+            chro = str(dataset['chr'].unique()[0])
 
         # Now let the fun begin.
         # Default values.
@@ -492,7 +511,8 @@ class MultiProcess:
         n_malign = n_tot - n_benign
 
         # Generating output.
-        output = pd.DataFrame({'gene': gene,
+        output = pd.DataFrame({'chr': chro,
+                               'gene': gene,
                                'default_auc': auc_default,
                                'default_f1': f1_default,
                                'default_recall': recall_default,
@@ -570,7 +590,8 @@ class MultiProcess:
         for p in processes:
             p.join()
 
-        overview = pd.DataFrame(columns=['gene', 'default_auc', 'default_f1',
+        overview = pd.DataFrame(columns=['chr', 'gene', 'default_auc',
+                                         'default_f1',
                                          'default_recall', 'default_fpr',
                                          'default_spec', 'optimal_c',
                                          'optimal_auc', 'optimal_f1',
@@ -592,7 +613,8 @@ class MultiProcess:
 
         overview.to_csv('/home/rjsietsma/Documents/'
                         'School/Master_DSLS/Final_Thesis/'
-                        'Initial_Data_exploration/optimal_f1_full_ds_v2.csv',
+                        'Initial_Data_exploration/'
+                        'optimal_f1_full_ds_with_chr.csv',
                         index=False)
 
 
