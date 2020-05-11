@@ -1,0 +1,221 @@
+AUC,Rank,Term_Name,Overlapping_Genes,Adjusted_P-value,Source
+0.5,6,Electrodermal activity,NRXN3,1.0,GWAS_Catalog_2019
+0.5,7,Change in LVEF in response to paclitaxel and trastuzumab in HER2+ breast cancer,TRPC6,1.0,GWAS_Catalog_2019
+0.5,8,Amyotrophic lateral sclerosis in C9orf72 mutation positive individuals,UNC13A,1.0,GWAS_Catalog_2019
+0.5,9,Circulating phylloquinone levels,KCNK9,1.0,GWAS_Catalog_2019
+0.5,10,Visceral adipose tissue,KCNK9,1.0,GWAS_Catalog_2019
+0.5,11,Vitamin E levels,SCARB1,1.0,GWAS_Catalog_2019
+0.5,12,Coronary heart disease (SNP X SNP interaction),HFE2,1.0,GWAS_Catalog_2019
+0.5,14,Current cigarettes per day in chronic obstructive pulmonary disease,CD96,1.0,GWAS_Catalog_2019
+0.5,16,Amyotrophic lateral sclerosis (age of onset),NRXN3,1.0,GWAS_Catalog_2019
+0.5,17,Response to platinum-based chemotherapy in non-small-cell lung cancer,NRXN3,1.0,GWAS_Catalog_2019
+0.5,18,Fasting blood insulin,IGF1,1.0,GWAS_Catalog_2019
+0.5,19,Small vessel stroke,CACNB2,1.0,GWAS_Catalog_2019
+0.5,20,Brain volume in infants (grey matter),CACNB2,1.0,GWAS_Catalog_2019
+0.5,21,Modified Stumvoll Insulin Sensitivity Index (BMI interaction),FGF9,1.0,GWAS_Catalog_2019
+0.5,22,Lipoprotein phospholipase A2 activity in cardiovascular disease,SCARB1,1.0,GWAS_Catalog_2019
+0.5,23,Severity of nausea and vomiting of pregnancy,TRPC6,1.0,GWAS_Catalog_2019
+0.5,24,Osteoprotegerin levels,SLC46A1,1.0,GWAS_Catalog_2019
+0.5,25,Lipoprotein-associated phospholipase A2 activity and mass,SCARB1,1.0,GWAS_Catalog_2019
+0.5,26,Response to quetiapine in schizophrenia,IGF1,1.0,GWAS_Catalog_2019
+0.5,27,Mammographic density (dense area),IGF1,1.0,GWAS_Catalog_2019
+0.55,1,Visceral adipose tissue,"KCNK9, ROBO1",0.34478817085811153,GWAS_Catalog_2019
+0.55,4,Electrodermal activity,NRXN3,1.0,GWAS_Catalog_2019
+0.55,5,Facial emotion recognition,ROBO1,1.0,GWAS_Catalog_2019
+0.55,6,Amyotrophic lateral sclerosis in C9orf72 mutation positive individuals,UNC13A,1.0,GWAS_Catalog_2019
+0.55,7,Vitamin E levels,SCARB1,1.0,GWAS_Catalog_2019
+0.55,8,Change in LVEF in response to paclitaxel and trastuzumab in HER2+ breast cancer,TRPC6,1.0,GWAS_Catalog_2019
+0.55,9,Circulating phylloquinone levels,KCNK9,1.0,GWAS_Catalog_2019
+0.55,10,Coronary heart disease (SNP X SNP interaction),HFE2,1.0,GWAS_Catalog_2019
+0.55,11,Diabetic retinopathy in type 2 diabetes,TBX18,1.0,GWAS_Catalog_2019
+0.55,16,Electrocardiographic conduction measures,CDKN1A,1.0,GWAS_Catalog_2019
+0.55,17,Type 2 diabetes nephropathy including microalbuminuria,PRCD,1.0,GWAS_Catalog_2019
+0.55,18,"Caffeine metabolism (plasma 1,7-dimethylxanthine (paraxanthine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.55,19,"Caffeine metabolism (plasma 3,7-dimethylxanthine (theobromine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.55,20,End-stage renal disease,APOL1,1.0,GWAS_Catalog_2019
+0.55,21,Attention deficit hyperactivity disorder or cannabis use,SLC6A9,1.0,GWAS_Catalog_2019
+0.55,22,Plasma amyloid beta peptide concentrations (ABx-42),KRT86,1.0,GWAS_Catalog_2019
+0.55,23,Brain connectivity,UBE2A,1.0,GWAS_Catalog_2019
+0.55,24,QRS complex (Cornell),CDKN1A,1.0,GWAS_Catalog_2019
+0.55,25,Food allergy (parent-of-origin effect),IQCE,1.0,GWAS_Catalog_2019
+0.55,26,Brain imaging in schizophrenia (dorsolateral prefrontal cortex interaction),ROBO1,1.0,GWAS_Catalog_2019
+0.6,2,Electrocardiographic conduction measures,"CDKN1A, SCN10A",0.3182463379501195,GWAS_Catalog_2019
+0.6,1,Visceral adipose tissue,"KCNK9, ROBO1",0.42571641602441557,GWAS_Catalog_2019
+0.6,6,Electrodermal activity,NRXN3,1.0,GWAS_Catalog_2019
+0.6,7,Facial emotion recognition,ROBO1,1.0,GWAS_Catalog_2019
+0.6,8,Amyotrophic lateral sclerosis in C9orf72 mutation positive individuals,UNC13A,1.0,GWAS_Catalog_2019
+0.6,9,Vitamin E levels,SCARB1,1.0,GWAS_Catalog_2019
+0.6,10,Change in LVEF in response to paclitaxel and trastuzumab in HER2+ breast cancer,TRPC6,1.0,GWAS_Catalog_2019
+0.6,11,Circulating phylloquinone levels,KCNK9,1.0,GWAS_Catalog_2019
+0.6,12,Coronary heart disease (SNP X SNP interaction),HFE2,1.0,GWAS_Catalog_2019
+0.6,13,Diabetic retinopathy in type 2 diabetes,TBX18,1.0,GWAS_Catalog_2019
+0.6,16,Type 2 diabetes nephropathy including microalbuminuria,PRCD,1.0,GWAS_Catalog_2019
+0.6,17,"Caffeine metabolism (plasma 1,7-dimethylxanthine (paraxanthine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.6,18,"Caffeine metabolism (plasma 3,7-dimethylxanthine (theobromine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.6,24,End-stage renal disease,APOL1,1.0,GWAS_Catalog_2019
+0.6,25,Atrioventricular conduction,SCN10A,1.0,GWAS_Catalog_2019
+0.6,26,Attention deficit hyperactivity disorder or cannabis use,SLC6A9,1.0,GWAS_Catalog_2019
+0.6,27,Plasma amyloid beta peptide concentrations (ABx-42),KRT86,1.0,GWAS_Catalog_2019
+0.6,28,Brain connectivity,UBE2A,1.0,GWAS_Catalog_2019
+0.6,29,QRS complex (Cornell),CDKN1A,1.0,GWAS_Catalog_2019
+0.6,30,Laterality in neovascular age-related macular degeneration,LHCGR,1.0,GWAS_Catalog_2019
+0.65,2,Electrocardiographic conduction measures,"CDKN1A, SCN10A",0.4352976516817578,GWAS_Catalog_2019
+0.65,1,Visceral adipose tissue,"KCNK9, ROBO1",0.5826258229785619,GWAS_Catalog_2019
+0.65,7,Electrodermal activity,NRXN3,1.0,GWAS_Catalog_2019
+0.65,8,Facial emotion recognition,ROBO1,1.0,GWAS_Catalog_2019
+0.65,9,Amyotrophic lateral sclerosis in C9orf72 mutation positive individuals,UNC13A,1.0,GWAS_Catalog_2019
+0.65,10,Vitamin E levels,SCARB1,1.0,GWAS_Catalog_2019
+0.65,11,Change in LVEF in response to paclitaxel and trastuzumab in HER2+ breast cancer,TRPC6,1.0,GWAS_Catalog_2019
+0.65,12,Circulating phylloquinone levels,KCNK9,1.0,GWAS_Catalog_2019
+0.65,13,Coronary heart disease (SNP X SNP interaction),HFE2,1.0,GWAS_Catalog_2019
+0.65,14,Diabetic retinopathy in type 2 diabetes,TBX18,1.0,GWAS_Catalog_2019
+0.65,16,Type 2 diabetes nephropathy including microalbuminuria,PRCD,1.0,GWAS_Catalog_2019
+0.65,17,Body mass index  (smoking years interaction),KCNE2,1.0,GWAS_Catalog_2019
+0.65,18,"Caffeine metabolism (plasma 1,7-dimethylxanthine (paraxanthine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.65,19,"Caffeine metabolism (plasma 3,7-dimethylxanthine (theobromine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.65,24,End-stage renal disease,APOL1,1.0,GWAS_Catalog_2019
+0.65,25,Atrioventricular conduction,SCN10A,1.0,GWAS_Catalog_2019
+0.65,26,Attention deficit hyperactivity disorder or cannabis use,SLC6A9,1.0,GWAS_Catalog_2019
+0.65,27,Plasma amyloid beta peptide concentrations (ABx-42),KRT86,1.0,GWAS_Catalog_2019
+0.65,28,Brain connectivity,UBE2A,1.0,GWAS_Catalog_2019
+0.65,29,QRS complex (Cornell),CDKN1A,1.0,GWAS_Catalog_2019
+0.7,2,Electrocardiographic conduction measures,"CDKN1A, SCN10A",0.6763641708244098,GWAS_Catalog_2019
+0.7,1,Visceral adipose tissue,"KCNK9, ROBO1",0.9061590394377075,GWAS_Catalog_2019
+0.7,3,Severity of nausea and vomiting of pregnancy,"TRPC6, SPECC1L",1.0,GWAS_Catalog_2019
+0.7,4,Myocardial infarction (early onset),"KCNE2, PCSK9",1.0,GWAS_Catalog_2019
+0.7,5,Plasma PCSK9 levels in stable coronary artery disease,"PCSK9, KCNQ5",1.0,GWAS_Catalog_2019
+0.7,6,Response to quetiapine in schizophrenia,"SLC10A2, IGF1",1.0,GWAS_Catalog_2019
+0.7,17,Electrodermal activity,NRXN3,1.0,GWAS_Catalog_2019
+0.7,18,Facial emotion recognition,ROBO1,1.0,GWAS_Catalog_2019
+0.7,19,Amyotrophic lateral sclerosis in C9orf72 mutation positive individuals,UNC13A,1.0,GWAS_Catalog_2019
+0.7,20,Vitamin E levels,SCARB1,1.0,GWAS_Catalog_2019
+0.7,21,Change in LVEF in response to paclitaxel and trastuzumab in HER2+ breast cancer,TRPC6,1.0,GWAS_Catalog_2019
+0.7,22,Circulating phylloquinone levels,KCNK9,1.0,GWAS_Catalog_2019
+0.7,23,Coronary heart disease (SNP X SNP interaction),HFE2,1.0,GWAS_Catalog_2019
+0.7,24,Diabetic retinopathy in type 2 diabetes,TBX18,1.0,GWAS_Catalog_2019
+0.7,27,Type 2 diabetes nephropathy including microalbuminuria,PRCD,1.0,GWAS_Catalog_2019
+0.7,28,Body mass index  (smoking years interaction),KCNE2,1.0,GWAS_Catalog_2019
+0.7,29,"Caffeine metabolism (plasma 1,7-dimethylxanthine (paraxanthine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.7,30,"Caffeine metabolism (plasma 3,7-dimethylxanthine (theobromine) level)",CYP2A6,1.0,GWAS_Catalog_2019
+0.7,32,End-stage renal disease,APOL1,1.0,GWAS_Catalog_2019
+0.7,33,Atrioventricular conduction,SCN10A,1.0,GWAS_Catalog_2019
+0.75,6,Visceral adipose tissue,"KCNK9, ROBO1",0.31405117739078753,GWAS_Catalog_2019
+0.75,5,HDL cholesterol,"MC4R, SCARB1, SLC46A1, LCAT, APOA1, SNX10, APOE, JAK2, GPIHBP1",0.34380349319375875,GWAS_Catalog_2019
+0.75,7,Electrocardiographic conduction measures,"CDKN1A, SCN10A",0.400974873396192,GWAS_Catalog_2019
+0.75,4,Total cholesterol levels,"SCARB1, COL18A1, PCSK9, APOA1, LCAT, APOE, JAK2, CYP7A1",0.4114443616623089,GWAS_Catalog_2019
+0.75,3,Triglycerides,"C3, SCARB1, COL18A1, CDKN1A, MAP3K1, APOA1, APOE, ARID2",0.44552645332406016,GWAS_Catalog_2019
+0.75,13,Feeling fed-up,"KIAA1109, ACTN1, HCN1",0.4616934409456782,GWAS_Catalog_2019
+0.75,14,Cerebrospinal fluid p-Tau181p:AB1-42 ratio,"CYP2A6, APOE",0.4712262883452429,GWAS_Catalog_2019
+0.75,17,Cholesterol efflux capacity (ABCA-1 dependent assay),"APOA1, APOE",0.4817265936321159,GWAS_Catalog_2019
+0.75,11,HDL cholesterol levels,"MC4R, SCARB1, APOA1, LCAT, APOE",0.48253208706330536,GWAS_Catalog_2019
+0.75,10,Metabolite levels (lipoprotein measures),"SCARB1, PCSK9, APOE",0.4879479162319525,GWAS_Catalog_2019
+0.75,2,Alzheimer's disease (late onset),"CEACAM16, TRIP4, TREM2, APOE, CDON",0.49791585545790346,GWAS_Catalog_2019
+0.75,12,Quantitative traits,"CACNB2, COL4A3BP, APOE",0.500167894357818,GWAS_Catalog_2019
+0.75,16,LDL cholesterol levels,"PCSK9, APOA1, APOE, CYP7A1",0.5067339528565434,GWAS_Catalog_2019
+0.75,8,Regular attendance at a pub or social club,"DPP6, STAP1, C10ORF2, PDZD7",0.5109912990006924,GWAS_Catalog_2019
+0.75,31,Lipoprotein-associated phospholipase A2 activity and mass,"SCARB1, APOE",0.5196010864735299,GWAS_Catalog_2019
+0.75,9,Obesity,"MC4R, MAF, NRXN3, ALPK1",0.5204396896708203,GWAS_Catalog_2019
+0.75,15,Hippocampal atrophy,"COL18A1, APOE, ARID2",0.5307051172349273,GWAS_Catalog_2019
+0.75,30,Early-onset Parkinson's disease,"COL18A1, CEL",0.5369211226893142,GWAS_Catalog_2019
+0.75,29,Response to quetiapine in schizophrenia,"SLC10A2, IGF1",0.5554356441613596,GWAS_Catalog_2019
+0.75,28,Plasma PCSK9 levels in stable coronary artery disease,"PCSK9, KCNQ5",0.5752726314528367,GWAS_Catalog_2019
+0.8,5,Total cholesterol levels,"SCARB1, LRPAP1, COL18A1, LIPG, PCSK9, APOA1, LCAT, APOE, JAK2, CYP7A1",0.2816236537474289,GWAS_Catalog_2019
+0.8,6,Feeling fed-up,"NEK9, KIAA1109, ACTN1, HCN1",0.29011562003070235,GWAS_Catalog_2019
+0.8,1,Resting heart rate,"KCNJ5, PLN, MYRF, NMNAT1, BCL11A, COL4A3, CACNA1C, APOE, MYH6",0.292957407767553,GWAS_Catalog_2019
+0.8,2,HDL cholesterol,"MC4R, SCARB1, SLC46A1, MYRF, LIPG, APOA1, LCAT, SNX10, APOE, JAK2, GPIHBP1, BPTF",0.32128404280301653,GWAS_Catalog_2019
+0.8,4,Metabolite levels (lipoprotein measures),"SCARB1, LIPG, PCSK9, APOE",0.3295080441483848,GWAS_Catalog_2019
+0.8,3,Triglycerides,"C3, SCARB1, LRPAP1, COL18A1, CDKN1A, MAP3K1, MYRF, APOA1, APOE, ARID2",0.3664342159560236,GWAS_Catalog_2019
+0.8,16,"Coronary artery disease (myocardial infarction, PTCA, CABG, angina or CIHD)","SCARB1, KCNE2, PCSK9, APOA1, APOE, GIGYF2",0.3790075248868967,GWAS_Catalog_2019
+0.8,15,Primary tooth development (time to first tooth eruption),"CACNB2, EDA, CDON",0.40401415028032434,GWAS_Catalog_2019
+0.8,14,Electrocardiographic conduction measures,"CDKN1A, SCN10A",0.43041430485309373,GWAS_Catalog_2019
+0.8,13,HDL cholesterol levels,"MC4R, SCARB1, LIPG, APOA1, LCAT, APOE",0.4423457379524208,GWAS_Catalog_2019
+0.8,12,LDL cholesterol levels,"LRPAP1, PCSK9, APOA1, APOE, CYP7A1",0.45930807378714844,GWAS_Catalog_2019
+0.8,19,Electrocardiographic traits,"CDKN1A, SCN10A, MYH6",0.4787605012185989,GWAS_Catalog_2019
+0.8,9,Lipid metabolism phenotypes,"LIPG, PCSK9, APOA1, APOE",0.4878820887293591,GWAS_Catalog_2019
+0.8,17,Total cholesterol levels in HDL,"LIPG, LCAT",0.4911572920417481,GWAS_Catalog_2019
+0.8,10,"Cholesterol, total","LRPAP1, LIPG, PCSK9, APOA1, APOE, CPA6, CYP7A1",0.49799442533207106,GWAS_Catalog_2019
+0.8,11,Alzheimer's disease (late onset),"CEACAM16, TRIP4, TREM2, APOE, CDON",0.5010633532223437,GWAS_Catalog_2019
+0.8,18,Parental longevity (father's attained age),"CYP2A6, CHRNA4, APOE",0.5053583068418545,GWAS_Catalog_2019
+0.8,8,Visceral adipose tissue,"KCNK9, ROBO1",0.5073553910119553,GWAS_Catalog_2019
+0.8,7,P wave duration,"SCN10A, MYH6, HCN1",0.534513386560114,GWAS_Catalog_2019
+0.8,29,Obesity,"MC4R, MAF, NRXN3, ALPK1",0.6289049633408624,GWAS_Catalog_2019
+0.85,1,Total cholesterol levels,"ABCA1, SCARB1, LRPAP1, COL18A1, DOCK7, PCSK9, APOA1, LCAT, A2ML1, FMN2, CYP7A1, CACNA1G, COL4A2, LIPG, APOE, LPA, LDLRAP1, JAK2",0.0009715598257529298,GWAS_Catalog_2019
+0.85,3,Metabolite levels (lipoprotein measures),"ABCA1, SCARB1, LIPG, PCSK9, APOE, LPA",0.017942219130475712,GWAS_Catalog_2019
+0.85,4,HDL cholesterol,"ABCA1, SCARB1, SLC46A1, MYRF, DOCK7, APOA1, LCAT, SNX10, CTCF, PEPD, MC4R, LIPG, APOE, JAK2, LPA, GPIHBP1, BPTF",0.021181493031852537,GWAS_Catalog_2019
+0.85,2,"Cholesterol, total","ABCA1, LRPAP1, LIPG, DOCK7, PCSK9, APOA1, A2ML1, APOE, LPA, LDLRAP1, CPA6, CYP7A1",0.0237181227498322,GWAS_Catalog_2019
+0.85,5,Triglycerides,"ABCA1, SCARB1, LRPAP1, COL18A1, CDKN1A, MAP3K1, MYRF, DOCK7, APOA1, PEPD, C3, APOE, ARID2, LPA",0.03982155698011585,GWAS_Catalog_2019
+0.85,7,"Caffeine metabolism (plasma 3,7-dimethylxanthine (theobromine) level)","CYP2A6, ADCK4, SNRPA",0.059943820159741965,GWAS_Catalog_2019
+0.85,6,"Caffeine metabolism (plasma 1,7-dimethylxanthine (paraxanthine) level)","CYP2A6, ADCK4, SNRPA",0.06993445685303229,GWAS_Catalog_2019
+0.85,8,"Coronary artery disease (myocardial infarction, PTCA, CABG, angina or CIHD)","SCARB1, REST, KCNE2, COL4A2, PCSK9, APOA1, APOE, LPA, GIGYF2",0.07744441566298174,GWAS_Catalog_2019
+0.85,9,Advanced age-related macular degeneration,"KMT2E, C3, ABCA1, C9, COL4A3, CFI, APOE",0.10389376020287491,GWAS_Catalog_2019
+0.85,10,Resting heart rate,"KCNJ5, PLN, MYRF, NMNAT1, BCL11A, COL4A3, TBX20, CACNA1C, APOE, MYH6",0.14174288438785812,GWAS_Catalog_2019
+0.85,11,LDL cholesterol,"ABCA1, LRPAP1, COL4A2, LIPG, DOCK7, PCSK9, APOA1, APOE, LPA, LDLRAP1, JAK2, CYP7A1",0.18641516815603706,GWAS_Catalog_2019
+0.85,15,Lipid metabolism phenotypes,"ABCA1, LIPG, PCSK9, APOA1, APOE",0.1868870367372038,GWAS_Catalog_2019
+0.85,14,HDL cholesterol levels,"MC4R, ABCA1, SCARB1, LIPG, APOA1, LCAT, APOE, PEPD",0.18830083832629918,GWAS_Catalog_2019
+0.85,12,Protein quantitative trait loci,"KIRREL3, CACNB2, IL1RN, CDAN1, LPA, ROBO1",0.18837055607857311,GWAS_Catalog_2019
+0.85,13,Coronary artery disease,"ABCA1, NEK9, SCARB1, CDKN1A, KCNE2, MAP3K1, APOA1, PCSK9, SMAD9, DDX41, GIGYF2, EPOR, MC4R, REST, COL4A2, LIPG, SPECC1L, TBX20, APOE, RAC1, LPA",0.18967600768025653,GWAS_Catalog_2019
+0.85,16,Parental longevity (father's attained age),"CYP2A6, CHRNA4, APOE, LPA",0.19986041498408455,GWAS_Catalog_2019
+0.85,17,Caffeine metabolism (plasma paraxanthine caffeine ratio),"CYP2A6, ADCK4, SNRPA",0.24447864179007409,GWAS_Catalog_2019
+0.85,18,Homeostasis model assessment of insulin resistance (dietary factor interaction),"MAP3K1, ANKH, AGBL1, CFI",0.244596614614106,GWAS_Catalog_2019
+0.85,19,Lipoprotein phospholipase A2 activity in cardiovascular disease,"SCARB1, APOE, LPA",0.2794601411697617,GWAS_Catalog_2019
+0.85,20,LDL cholesterol levels,"LRPAP1, PCSK9, APOA1, APOE, LDLRAP1, CYP7A1",0.3291302642841075,GWAS_Catalog_2019
+0.9,1,"Cholesterol, total","ABCA1, ABCG8, CUBN, LRPAP1, ABCG5, GCKR, DOCK7, PCSK9, APOA1, A2ML1, HNF1A, CYP7A1, DLG4, HNF4A, LIPG, ANGPTL3, APOE, LPA, LDLRAP1, CPA6",6.041030432099448e-05,GWAS_Catalog_2019
+0.9,2,Total cholesterol levels,"ABCA1, SCARB1, ABCG8, CUBN, LRPAP1, COL18A1, GCKR, DOCK7, PCSK9, APOA1, LCAT, A2ML1, HNF1A, FMN2, CYP7A1, CACNA1G, COL4A2, LIPG, ANGPTL3, APOE, LPA, LDLRAP1, JAK2",0.0010058993511232765,GWAS_Catalog_2019
+0.9,4,Lipid metabolism phenotypes,"ABCA1, ABCG8, GCKR, ABCG5, LIPG, ANGPTL3, PCSK9, APOA1, APOE",0.003556323348375804,GWAS_Catalog_2019
+0.9,3,LDL cholesterol,"ABCA1, ABCG8, LRPAP1, ABCG5, GCKR, TMPRSS6, DOCK7, GATA6, PCSK9, APOA1, HNF1A, CYP7A1, AR, COL4A2, DLG4, LIPG, ANGPTL3, APOE, LPA, LDLRAP1, JAK2",0.0038095976945154053,GWAS_Catalog_2019
+0.9,7,Electrocardiographic conduction measures,"CDKN1A, SCN10A, NFIA, MSX1",0.0075488560880286595,GWAS_Catalog_2019
+0.9,5,Chloride levels,"GCKR, CUX2, SYT1, BDNF, HNF1A, HDAC8, CLASP1",0.008125544947330973,GWAS_Catalog_2019
+0.9,6,Resting heart rate,"KCNJ5, GCKR, MYRF, BCL11A, GATA6, CACNA1C, MN1, GJA1, PLN, NMNAT1, COL4A3, TBX20, MYH11, APOE, CD46, MYH6",0.008488615319653335,GWAS_Catalog_2019
+0.9,9,"Coronary artery disease (myocardial infarction, PTCA, CABG, angina or CIHD)","SCARB1, ABCG8, ABCG5, KCNE2, SMAD3, KCNJ13, PCSK9, APOA1, GIGYF2, REST, COL4A2, APOE, LPA",0.011759551644089167,GWAS_Catalog_2019
+0.9,8,Metabolite levels (lipoprotein measures),"ABCA1, SCARB1, ABCG5, LIPG, PCSK9, APOE, LPA",0.011782968713763942,GWAS_Catalog_2019
+0.9,10,Gallstone disease,"ABCG8, GCKR, HNF4A, SLC10A2, HNF1A, LITAF, CYP7A1",0.019544716808219377,GWAS_Catalog_2019
+0.9,11,Coronary artery disease,"SCARB1, CDKN1A, KCNE2, NDUFA12, PCSK9, DDX41, GIGYF2, MC4R, LIPG, TBX20, MYH11, APOE, RAC1, ABCA1, NEK9, ABCG8, ABCG5, MAP3K1, SMAD3, CDKN2A, BDNF, KCNJ13, APOA1, SMAD9, HNF1A, EPOR, REST, COL4A2, TBXAS1, SPECC1L, CCM2, TAF6, LPA",0.024402624608532677,GWAS_Catalog_2019
+0.9,13,Renal overload gout,"SLC22A12, GCKR, CUX2",0.07111213259713871,GWAS_Catalog_2019
+0.9,12,Dementia with Lewy bodies,"STX1B, GBA, APOE",0.07703814364690027,GWAS_Catalog_2019
+0.9,22,Waist circumference adjusted for BMI (adjusted for smoking behaviour),"ACAN, DOCK3, NKX2-6, MAP3K1, SMAD3, DNMT3A, ADAMTS17, PEPD, ZNF423, EZH2",0.08306463464280138,GWAS_Catalog_2019
+0.9,15,LDL cholesterol levels,"LRPAP1, DLG4, ANGPTL3, PCSK9, APOA1, HNF1A, APOE, LDLRAP1, CYP7A1",0.08327215071574261,GWAS_Catalog_2019
+0.9,16,Protein quantitative trait loci,"KIRREL3, CACNB2, IL1RN, GJA1, CDAN1, ATP2A2, LPA, ROBO1",0.08334276886677133,GWAS_Catalog_2019
+0.9,18,Waist circumference adjusted for BMI (joint analysis main effects and smoking interaction),"ACAN, PRNP, DOCK3, NKX2-6, MAP3K1, SMAD3, DNMT3A, PEPD, ZNF423, EZH2",0.0833957959470165,GWAS_Catalog_2019
+0.9,24,Red blood cell traits,"SPTA1, G6PD, F8, SCO2, TMPRSS6, BCL11A, NPRL3, PIEZO1, CACNA1C, LMF1",0.08379529837627632,GWAS_Catalog_2019
+0.9,17,Caffeine metabolism (plasma paraxanthine caffeine ratio),"GCKR, CYP2A6, ADCK4, SNRPA",0.08523977527940406,GWAS_Catalog_2019
+0.9,21,"Caffeine metabolism (plasma 3,7-dimethylxanthine (theobromine) level)","CYP2A6, ADCK4, SNRPA",0.08552761702130098,GWAS_Catalog_2019
+0.95,2,Lipid metabolism phenotypes,"ABCA1, CETP, ABCG8, CPT1A, GCKR, ABCG5, LPL, PCSK9, APOA1, APOA5, LIPC, APOC2, LIPG, ANGPTL3, APOE, APOB, LDLR",1.1959727780643326e-07,GWAS_Catalog_2019
+0.95,1,"Cholesterol, total","DOCK6, CETP, LRPAP1, HFE, DOCK7, PCSK9, ABCB11, CYP7A1, LIPC, HNF4A, LIPG, APOE, APOB, LDLRAP1, CPA6, LDLR, ABCA1, ABCG8, CUBN, ABCG5, GCKR, FN1, APOA1, A2ML1, HNF1A, APOA5, DLG4, APOC2, ANGPTL3, PPARG, RAF1, LPA",1.1979733193038134e-07,GWAS_Catalog_2019
+0.95,3,Metabolite levels,"CETP, SERPINA1, DOCK7, ETFDH, LPL, PCSK9, ABCB11, PARK2, LIPC, CYP4V2, SIX3, PHGDH, APOE, ACADM, APOB, ACADS, LDLR, ABCA1, GCKR, ZFHX3, ACE, APOA1, ATP2B2, APOA5, GCK, MYO1E, ANGPTL3, FGF12",1.954707016039431e-06,GWAS_Catalog_2019
+0.95,4,LDL cholesterol,"CETP, LRPAP1, SERPINA1, TMPRSS6, HFE, DOCK7, GATA6, PCSK9, BRCA2, ABCB11, CYP7A1, LIPG, APOE, APOB, LDLRAP1, JAK2, LDLR, ABCA1, ABCG8, ABCG5, GCKR, ZFHX3, COG5, FN1, APOA1, HNF1A, APOA5, DNM2, RP1L1, AR, COL4A2, DLG4, APOC2, ANGPTL3, PPARG, LPA, PLEC",2.678444545526809e-06,GWAS_Catalog_2019
+0.95,5,Metabolite levels (lipoprotein measures),"ABCA1, CETP, SCARB1, ABCG5, LIPC, LIPG, LPL, PCSK9, APOE, APOB, LPA, LDLR",4.078743735968938e-05,GWAS_Catalog_2019
+0.95,6,Total cholesterol levels,"SCARB1, CETP, LRPAP1, COL18A1, SERPINA1, DOCK7, PCSK9, LCAT, FMN2, ABCB11, CYP7A1, CACNA1G, LIPC, LIPG, PHGDH, APOE, APOB, LDLRAP1, JAK2, LDLR, ABCA1, ABCG8, CUBN, GCKR, FN1, APOA1, A2ML1, HNF1A, APOA5, COL4A2, APOC2, ANGPTL3, RAF1, LPA, PLEC",6.865847162509081e-05,GWAS_Catalog_2019
+0.95,7,"Coronary artery disease (myocardial infarction, PTCA, CABG, angina or CIHD)","SCARB1, ABCG8, CETP, ABCG5, KCNE2, SMAD3, KCNJ13, FN1, PCSK9, APOA1, LPL, APOA5, GIGYF2, ZEB2, REST, COL4A2, COL4A1, APOE, LPA, APOB, LDLR",0.0006411302359447415,GWAS_Catalog_2019
+0.95,8,Resting heart rate,"MYRF, GATA6, CACNA1C, TTN, GMPPB, GJA1, PLN, TBX20, MYH11, APOE, SCN5A, NKX2-5, SOX5, DSP, KCNJ5, GCKR, BCL11A, MN1, DES, NMNAT1, COL4A3, PMP22, CD46, MYH6, PLEC",0.0007670505273010207,GWAS_Catalog_2019
+0.95,9,LDL cholesterol levels,"CETP, LRPAP1, FN1, PCSK9, APOA1, HNF1A, BRCA2, APOA5, CYP7A1, DLG4, APOC2, ANGPTL3, APOE, LDLRAP1, APOB, LDLR",0.0016707840728947012,GWAS_Catalog_2019
+0.95,11,Metabolic syndrome,"CAMK2B, ABCA1, CETP, GCKR, DYRK1A, LPL, APOA5, GCK, LIPC, MYL2, APOE, APOB, ENG",0.0017396532483941532,GWAS_Catalog_2019
+0.95,10,Electrocardiographic conduction measures,"CDKN1A, SCN10A, NFIA, SCN5A, MSX1",0.0018901300743399193,GWAS_Catalog_2019
+0.95,12,Lipid traits,"RYR2, CETP, GCKR, LIPC, DOCK7, LPL, APOA1, APOE, APOA5",0.0023889071177830203,GWAS_Catalog_2019
+0.95,13,Cutaneous malignant melanoma,"OCA2, ZNF462, RTEL1, TERC, CDH1, CYP1B1, POT1, TMEM38B",0.012186773827786166,GWAS_Catalog_2019
+0.95,14,Triglycerides,"SCARB1, CETP, LRPAP1, COL18A1, CDKN1A, MYRF, DOCK7, LPL, UBR1, PEPD, C3, LIPC, CAPN3, APOE, ARID2, APOB, BBS4, ABCA1, GCKR, MAP3K1, APOA1, AP3B1, APOA5, GCK, NPC1, APOC2, ANGPTL3, LPA",0.016741766282610888,GWAS_Catalog_2019
+0.95,16,Refractive error,"SIX6, BMP2, ACTC1, ZIC2, CHD7, RDH5, KCNQ5, KCNJ2, GRIA4",0.01979003335202104,GWAS_Catalog_2019
+0.95,15,Gallstone disease,"ABCG8, GCKR, SERPINA1, HNF4A, SLC10A2, HNF1B, HNF1A, LITAF, CYP7A1",0.02110936890882244,GWAS_Catalog_2019
+0.95,20,Glioma,"RTEL1, POLR3B, TERC, CDKN2A, IDH1, ETFA, TP53, LMF1",0.022050218020367045,GWAS_Catalog_2019
+0.95,17,Chin dimples,"CRB1, PKDCC, EYA1, SATB2, C10ORF11, VEGFC, DICER1, BMP4, ZEB2, FGF9, TBL1XR1, AGTR1, SOX9, FAT4, KCNJ2",0.022198197783119922,GWAS_Catalog_2019
+0.95,19,Lipoprotein-associated phospholipase A2 activity and mass,"CETP, SCARB1, GCKR, APOE, APOB, LDLR",0.02294435700119132,GWAS_Catalog_2019
+0.95,25,Advanced age-related macular degeneration,"KMT2E, ABCA1, CETP, GPX4, CFI, C3, LIPC, C9, COL4A3, TIMP3, RDH5, APOE, CFB",0.02335716644571658,GWAS_Catalog_2019
+1.0,1,Lipid metabolism phenotypes,"ABCA1, CETP, ABCG8, CPT1A, GCKR, ABCG5, LPL, PCSK9, APOC3, APOA1, CELSR2, APOA5, LIPC, APOC2, LIPG, ALB, ANGPTL3, APOE, APOB, LDLR",4.6718347362788755e-07,GWAS_Catalog_2019
+1.0,2,"Cholesterol, total","DOCK6, CETP, LRPAP1, HFE, DOCK7, PCSK9, ABCB11, CELSR2, CYP7A1, LIPC, TRPS1, HNF4A, LIPG, APOE, APOB, LDLRAP1, CPA6, LDLR, ABCA1, MYLIP, ABCG8, CUBN, ABCG5, GCKR, DNAH11, UGT1A1, FN1, APOA1, APOC3, A2ML1, HNF1A, APOA5, DLG4, APOC2, ANGPTL3, PPARG, RAF1, LPA",2.22524862424457e-06,GWAS_Catalog_2019
+1.0,3,Refractive error,"RBFOX1, LAMA2, CHD7, CACNA1D, PRSS56, SIX6, BMP2, ACTC1, CHRNG, ZIC2, PCCA, RDH5, KCNQ5, KCNJ2, GRIA4, TJP2",1.2632751993589391e-05,GWAS_Catalog_2019
+1.0,4,Metabolite levels,"CETP, SERPINA1, DOCK7, ETFDH, LPL, PCSK9, ABCB11, CELSR2, PARK2, SLCO1B1, LIPC, CYP4V2, SIX3, PHGDH, APOE, ACADM, APOB, ACADS, LDLR, ABCA1, GCKR, ZFHX3, ACE, F12, APOA1, APOC3, ATP2B2, APOA5, GCK, MYO1E, CPS1, ALMS1, ANGPTL3, FGF12",1.5161638449130023e-05,GWAS_Catalog_2019
+1.0,5,LDL cholesterol,"CETP, LRPAP1, SERPINA1, TMPRSS6, HFE, ABCB4, DOCK7, GATA6, PCSK9, BRCA2, ABCB11, CELSR2, PIGV, CYP7A1, LIPG, APOE, APOB, LDLRAP1, JAK2, LDLR, ABCA1, MYLIP, ABCG8, ABCG5, GCKR, DNAH11, ZFHX3, UGT1A1, COG5, FN1, APOA1, APOC3, IFT80, HNF1A, APOA5, SMARCA4, DNM2, RP1L1, AR, COL4A2, DLG4, APOC2, ANGPTL3, PPARG, LPA, PLEC",3.2902997786072594e-05,GWAS_Catalog_2019
+1.0,6,Metabolite levels (lipoprotein measures),"ABCA1, CETP, SCARB1, DNAH11, ABCG5, LPL, PCSK9, CELSR2, LIPC, LIPG, APOE, APOB, LPA, LDLR",7.752741761102309e-05,GWAS_Catalog_2019
+1.0,7,Atrial fibrillation,"CDKN1A, GORAB, ZNF292, MYPN, IGF1R, IRF2BPL, GJA1, HERC1, CFL2, MYO18B, SCN5A, SGCG, PITX3, KCNH2, COG5, KCND3, C10ORF11, HSPG2, SCN10A, MTHFD1, FAM161A, MYOT, PKP2, CASQ2, RBM20, MAPT, MYH6, MYH7, CHRNA1, FBN2, HCN4, GOSR2, GATA4, TTN, CUX2, PLN, ERBB4, NKX2-5, KCNJ2, ZNF462, KCNJ5, MBD5, ZFHX3, NEBL, CAV1, EYA4, MTHFR, TBX5, SORL1, ESR2, TBX3, REEP1, BMP2",0.0003294381162250914,GWAS_Catalog_2019
+1.0,9,Age-related macular degeneration,"CETP, TNXB, CFH, CFI, TYR, GLI3, TGFBR1, GLI2, C3, B3GALTL, ASPM, REST, LIPC, CFHR4, COL10A1, TIMP3, CFHR5, SKIV2L, APOE, CD46, CFB, MBL2",0.00046988203256698884,GWAS_Catalog_2019
+1.0,10,Total cholesterol levels,"SCARB1, CETP, LRPAP1, COL18A1, SERPINA1, ABCB4, DOCK7, PCSK9, LCAT, UBE3B, IKZF1, FMN2, ABCB11, CELSR2, CYP7A1, CACNA1G, LIPC, TRPS1, LIPG, DNMT3B, PHGDH, APOE, APOB, LDLRAP1, JAK2, LDLR, ABCA1, MYLIP, ABCG8, CUBN, GCKR, DNAH11, FN1, APOA1, APOC3, A2ML1, HNF1A, APOA5, COL4A2, APOC2, ANGPTL3, RAF1, LPA, PLEC",0.0004785777497460121,GWAS_Catalog_2019
+1.0,8,HDL cholesterol,"DOCK6, SCARB1, SLC46A1, SETD2, IRS1, DOCK7, SNX10, LAMC2, IKZF1, CTCF, UBE3B, PEPD, PIGV, CELSR2, MC4R, LIPC, TRIM2, HNF4A, TRPS1, LIPG, AKT1, CD36, JAK2, APOA1, APOA5, RUNX1, NPC1, MYL2, PPARG, PLIN1, LPA, FTO, CETP, DNAH1, MVK, MYRF, MTTP, LPL, LCAT, VPS53, APOE, APOB, GPIHBP1, BPTF, ABCA1, SLC12A3, INSR, APOC3, STAG1, CPS1, APOC2, TUBGCP4",0.0005050678526414084,GWAS_Catalog_2019
+1.0,11,LDL cholesterol levels,"MYLIP, CETP, LRPAP1, DNAH11, UGT1A1, FN1, PCSK9, APOA1, APOC3, HNF1A, BRCA2, PIGV, APOA5, CYP7A1, DLG4, APOC2, ANGPTL3, APOE, LDLRAP1, APOB, LDLR",0.0006560116749853604,GWAS_Catalog_2019
+1.0,12,Red blood cell traits,"G6PD, TMPRSS6, MAX, BCL11A, HFE, NPRL3, PRKAG2, IKZF1, KIF22, CACNA1C, HK1, TYMP, LMF1, MECP2, SPTA1, SYCE2, F8, KITLG, CCND2, LIPC, SCO2, TFR2, KIT, PIEZO1",0.0012085748639809215,GWAS_Catalog_2019
+1.0,13,Height,"RPL5, DGKE, SERPINA1, DOCK3, FASTKD2, IHH, BRCA2, MYPN, GLI2, IGF1R, MC4R, GHR, NIPBL, SIX6, CCND2, GNPTAB, SIN3A, CEP250, HIST1H1E, PHGDH, PITX1, DIS3L2, POLG, BCKDHA, GHSR, MEF2C, ADSL, MAP2K2, DNMT3A, NOG, MKL1, PEX2, PEX1, SDHB, RUNX2, ETV6, DNM2, MAF, KCNQ1, PCCB, RFT1, TMEM126A, CEP63, AGXT, FREM1, SF3B4, FBN2, KCNE2, SLC22A5, NPR3, PARN, LTBP2, FBLN5, RNF135, ACAN, PDE11A, EPB41L1, NSD1, ADAMTS17, NKX2-1, DYM, RAB28, ARSE, NHEJ1, KCNJ2, FANCI, ZNF462, ZRANB1, TGFB2, GCKR, PNPT1, INSR, PTCH1, EIF2AK3, FANCC, IGF1, FANCE, TBX4, GDF5, EXT1, GALNS, TTLL5, STAG1, BMP2, REST, WDR60, CDK10, TRIP11, ATP13A2, SERPINI1, FGFR3, EZH2",0.0021388386349857594,GWAS_Catalog_2019
+1.0,16,HDL cholesterol levels,"FTO, SCARB1, CETP, SETD2, MVK, IRS1, LCAT, LPL, IKZF1, PEPD, PIGV, MC4R, LIPC, TRPS1, LIPG, AKT1, APOE, ABCA1, SLC12A3, APOA1, APOC3, APOA5, MYL2, APOC2, MET",0.003003642373843217,GWAS_Catalog_2019
+1.0,14,Metabolic traits,"GCKR, ACE, ETFDH, LPL, HPS5, ABCB11, OPLAH, SLCO1B1, CPS1, IVD, LEPR, ALPL, PHGDH, ACADM, APOB, ACADS",0.0031208067785542517,GWAS_Catalog_2019
+1.0,15,Advanced age-related macular degeneration,"KMT2E, ABCA1, CETP, GPX4, CFH, CFI, RLBP1, TGFBR1, C3, TRPM1, B3GALTL, LIPC, C9, COL4A3, TIMP3, RDH5, SKIV2L, APOE, CFB",0.0031501344714729516,GWAS_Catalog_2019
+1.0,17,Waist circumference adjusted for body mass index,"SF3B4, IRS1, NPR3, IHH, PEPD, ACAN, SUFU, NSD1, VPS53, ADAMTS17, NLRP3, ITGB6, TMEM38B, ZNF423, DIS3L2, ZNF462, MEF2C, TGFB2, NKX2-6, SMAD3, MAP3K1, PTCH1, DNMT3A, BMP2, KCNQ1, COL6A1, NDUFS4, GNAS, TRIP11, CEP63, EZH2",0.0031724410663452763,GWAS_Catalog_2019
+1.0,18,"Coronary artery disease (myocardial infarction, PTCA, CABG, angina or CIHD)","SCARB1, CETP, KCNE2, PCSK9, LPL, PLG, LIPA, GIGYF2, RAI1, APOE, APOB, LDLR, ABCG8, ABCG5, SMAD3, KCNJ13, FN1, APOA1, APOA5, ZEB2, REST, COL4A2, COL4A1, UMPS, LPA",0.0032496994599025783,GWAS_Catalog_2019
+1.0,20,Homocysteine levels,"CUBN, CPS1, CBS, FANCA, MTHFR, HNF1A, MUT, MMACHC",0.0037576243554687623,GWAS_Catalog_2019
+1.0,21,Hemoglobin levels,"G6PD, TMPRSS6, BCL11A, HFE, NPRL3, HBB, PRKAG2, HBA2, HBD, IKZF1, HK1, TFR2, KIT",0.00381079662767655,GWAS_Catalog_2019
