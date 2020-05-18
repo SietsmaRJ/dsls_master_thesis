@@ -1,0 +1,56 @@
+AUC,Term_Name,Adjusted_P-value,Source
+0.5,Autosomal dominant inheritance (HP:0000006),3.156382710204921e-12,Human_Phenotype_Ontology
+0.5,Intellectual Disability,0.00043706320904962956,DisGeNET
+0.5,Short stature,0.0018080198831246371,DisGeNET
+0.5,Neurodegenerative disease,0.005007897586012479,Jensen_DISEASES
+0.5,neuropathy,0.005197129336245182,OMIM_Disease
+0.55,Autosomal dominant inheritance (HP:0000006),8.394257764917542e-11,Human_Phenotype_Ontology
+0.55,Autosomal recessive inheritance (HP:0000007),0.000345431730378385,Human_Phenotype_Ontology
+0.55,Neurodegenerative disease,0.001440182853948619,Jensen_DISEASES
+0.55,Intellectual Disability,0.002308716865974328,DisGeNET
+0.55,Abnormal EKG (HP:0003115),0.006518370697225842,Human_Phenotype_Ontology
+0.6,Autosomal dominant inheritance (HP:0000006),5.189207479831878e-13,Human_Phenotype_Ontology
+0.6,Neurodegenerative disease,4.711474211805996e-05,Jensen_DISEASES
+0.6,Autosomal recessive inheritance (HP:0000007),4.98138063106623e-05,Human_Phenotype_Ontology
+0.6,Intellectual Disability,0.0007705421489323102,DisGeNET
+0.6,neuropathy,0.0024612034301132353,OMIM_Disease
+0.65,Autosomal dominant inheritance (HP:0000006),4.683800648135338e-16,Human_Phenotype_Ontology
+0.65,Neurodegenerative disease,3.3186169026185572e-06,Jensen_DISEASES
+0.65,Autosomal recessive inheritance (HP:0000007),3.3582238702926564e-05,Human_Phenotype_Ontology
+0.65,Intellectual Disability,0.00045835779176412345,DisGeNET
+0.65,Abnormal EKG (HP:0003115),0.0005608644947089583,Human_Phenotype_Ontology
+0.7,Autosomal dominant inheritance (HP:0000006),3.976306492073774e-20,Human_Phenotype_Ontology
+0.7,Intellectual Disability,2.1611355532398444e-08,DisGeNET
+0.7,Neurodegenerative disease,9.139884666914023e-08,Jensen_DISEASES
+0.7,Autosomal recessive inheritance (HP:0000007),3.3649394634275086e-07,Human_Phenotype_Ontology
+0.7,Pediatric failure to thrive,6.994659094028413e-06,DisGeNET
+0.75,Autosomal dominant inheritance (HP:0000006),6.024296771276441e-32,Human_Phenotype_Ontology
+0.75,Intellectual Disability,1.7371145800107925e-20,DisGeNET
+0.75,Autosomal recessive inheritance (HP:0000007),3.887066076942094e-11,Human_Phenotype_Ontology
+0.75,Neurodegenerative disease,9.988712772298747e-09,Jensen_DISEASES
+0.75,Mental deficiency,1.0872233359665673e-06,DisGeNET
+0.8,Autosomal dominant inheritance (HP:0000006),2.5501654885636412e-45,Human_Phenotype_Ontology
+0.8,Intellectual Disability,1.3692378908250452e-35,DisGeNET
+0.8,Mental deficiency,2.232324426959523e-15,DisGeNET
+0.8,Mental Retardation,3.4637211302884075e-15,DisGeNET
+0.8,Poor school performance,3.5403530893629474e-15,DisGeNET
+0.85,Intellectual Disability,2.0470067690432067e-77,DisGeNET
+0.85,Autosomal dominant inheritance (HP:0000006),1.957076050473626e-74,Human_Phenotype_Ontology
+0.85,Mental Retardation,2.9645225107279874e-29,DisGeNET
+0.85,Autosomal recessive inheritance (HP:0000007),1.2376030162884142e-28,Human_Phenotype_Ontology
+0.85,Mental deficiency,1.5398641498451102e-26,DisGeNET
+0.9,Intellectual Disability,4.581076120236593e-177,DisGeNET
+0.9,Autosomal dominant inheritance (HP:0000006),7.42634908438115e-150,Human_Phenotype_Ontology
+0.9,Mental Retardation,1.3115139383324003e-85,DisGeNET
+0.9,Poor school performance,2.2826540872090554e-84,DisGeNET
+0.9,Mental deficiency,1.8170553686398905e-82,DisGeNET
+0.95,Intellectual Disability,0.0,DisGeNET
+0.95,Autosomal dominant inheritance (HP:0000006),4.037268651707679e-297,Human_Phenotype_Ontology
+0.95,Autosomal recessive inheritance (HP:0000007),5.94292751838273e-252,Human_Phenotype_Ontology
+0.95,Mental Retardation,1.2366479707397332e-216,DisGeNET
+0.95,Mental deficiency,1.3016591183893102e-214,DisGeNET
+1.0,Autosomal recessive inheritance (HP:0000007),0.0,Human_Phenotype_Ontology
+1.0,Cognitive delay,0.0,DisGeNET
+1.0,Dull intelligence,0.0,DisGeNET
+1.0,Global developmental delay,0.0,DisGeNET
+1.0,Intellectual Disability,0.0,DisGeNET

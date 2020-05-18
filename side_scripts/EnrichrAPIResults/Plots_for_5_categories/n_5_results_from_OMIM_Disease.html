@@ -1,0 +1,85 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>Bokeh Plot</title>
+      
+      
+        
+          
+        
+        
+          
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.0.2.min.js" integrity="sha384-ufR9RFnRs6lniiaFvtJziE0YeidtAgBRH6ux2oUItHw5WTvE1zuk9uzhUU/FJXDp" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body>
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="c48834ab-700c-4611-82b8-db06f947b620" data-root-id="11618"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="11754">
+          {"66da30c4-df68-4e44-8898-c3699facdcd8":{"roots":{"references":[{"attributes":{"axis":{"id":"11629"},"ticker":null},"id":"11632","type":"Grid"},{"attributes":{"fill_color":{"field":"color"},"line_color":{"field":"color"},"size":{"units":"screen","value":10},"x":{"field":"AUC"},"y":{"field":"Adjusted_P-value"}},"id":"11646","type":"Scatter"},{"attributes":{"overlay":{"id":"11637"}},"id":"11615","type":"BoxZoomTool"},{"attributes":{},"id":"11664","type":"Selection"},{"attributes":{},"id":"11652","type":"BasicTickFormatter"},{"attributes":{},"id":"11625","type":"LinearScale"},{"attributes":{},"id":"11617","type":"SaveTool"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"render_mode":"css","right_units":"screen","top_units":"screen"},"id":"11637","type":"BoxAnnotation"},{"attributes":{},"id":"11665","type":"UnionRenderers"},{"attributes":{"axis_label":"AUC","formatter":{"id":"11652"},"ticker":{"id":"11630"}},"id":"11629","type":"LinearAxis"},{"attributes":{},"id":"11614","type":"PanTool"},{"attributes":{"axis":{"id":"11633"},"dimension":1,"ticker":null},"id":"11636","type":"Grid"},{"attributes":{"data_source":{"id":"11611"},"glyph":{"id":"11646"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"11647"},"selection_glyph":null,"view":{"id":"11649"}},"id":"11648","type":"GlyphRenderer"},{"attributes":{},"id":"11623","type":"DataRange1d"},{"attributes":{},"id":"11654","type":"BasicTickFormatter"},{"attributes":{},"id":"11616","type":"ResetTool"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"11612"},{"id":"11613"},{"id":"11614"},{"id":"11615"},{"id":"11616"},{"id":"11617"}]},"id":"11638","type":"Toolbar"},{"attributes":{"axis_label":"Adjusted P-value","formatter":{"id":"11654"},"ticker":{"id":"11634"}},"id":"11633","type":"LinearAxis"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"field":"color"},"line_alpha":{"value":0.1},"line_color":{"field":"color"},"size":{"units":"screen","value":10},"x":{"field":"AUC"},"y":{"field":"Adjusted_P-value"}},"id":"11647","type":"Scatter"},{"attributes":{},"id":"11621","type":"DataRange1d"},{"attributes":{"callback":null,"tooltips":[["Term_name","@Term_Name"],["Genes","@Overlapping_Genes"]]},"id":"11612","type":"HoverTool"},{"attributes":{"data":{"AUC":{"__ndarray__":"AAAAAAAA4D8AAAAAAADgPwAAAAAAAOA/AAAAAAAA4D8AAAAAAADgP5qZmZmZmeE/mpmZmZmZ4T+amZmZmZnhP5qZmZmZmeE/mpmZmZmZ4T8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/zczMzMzM5D/NzMzMzMzkP83MzMzMzOQ/zczMzMzM5D/NzMzMzMzkP2ZmZmZmZuY/ZmZmZmZm5j9mZmZmZmbmP2ZmZmZmZuY/ZmZmZmZm5j8AAAAAAADoPwAAAAAAAOg/AAAAAAAA6D8AAAAAAADoPwAAAAAAAOg/mpmZmZmZ6T+amZmZmZnpP5qZmZmZmek/mpmZmZmZ6T+amZmZmZnpPzMzMzMzM+s/MzMzMzMz6z8zMzMzMzPrPzMzMzMzM+s/MzMzMzMz6z/NzMzMzMzsP83MzMzMzOw/zczMzMzM7D/NzMzMzMzsP83MzMzMzOw/ZmZmZmZm7j9mZmZmZmbuP2ZmZmZmZu4/ZmZmZmZm7j9mZmZmZmbuPwAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8=","dtype":"float64","shape":[55]},"Adjusted_P-value":{"__ndarray__":"Ex6EyJVJdT+3uGsKQ/vnP7/HqeQck+o/GKppAeum6j+I6FzrsR3rP2zUlCfL8ac/2Yxtu+A54j+wxW8g/U7lPyfSrorCz+k/V4yQvUnc6j/oabeHhClkP0uyHX43ENc/8j+9poei2j/nT5dpdijcPyjeJe6EgOE/+qrhHJ+pcj80zQsny1DPPxmTCmv0VtQ/EADv0LTI1D9RveJmVW/ZP3r6qVAgDoY/u4AI4+0G2D8Q2bJayNveP0Fr88fhpt8/VVHQfuVA4z/TjbdWipOIPz7uybjDepY/yGLNv1jQlj+o2mRVwNCZP+zcR2VnSbM/133pg7UIkT8sI/u9TzmiP1YNleHDjKc/uq7IkNSnpz/t8RJjvgCrP+VUR3IWbhw/lWLLegPNZT/mTz0IDdJxP8FR2DUlqXY/TkkHiiDYgz+1DlQDO3lHPtZClHypve8+YtIEeybv8D5H20Xu6oweP/GXngFeRDU/ZgzZR2XMKj3hCb/xmVVCPUdpQ1oGPCA+o7gGxcUjRD4wdVjIqIJEPrkErbsI5z079vL/fjdMKDx5MDqeXdo6PHIe78bhtig9g8Ndfs+lSz0=","dtype":"float64","shape":[55]},"Overlapping_Genes":["CTDP1, GJB3, C10ORF2","KCNK9, IGF1","NTRK2","GIGYF2","YARS","CTDP1, GJB3, C10ORF2","CTDP1, SORD","KCNK9, UBE2A, IGF1","IRAK3","NTRK2","CTDP1, GJB3, C10ORF2, GARS","YARS, GARS","CTDP1, SORD","KCNK9, UBE2A, IGF1","GJB3, IGF1, DFNA5","CTDP1, GJB3, C10ORF2, GARS","ANG, NEFH","PCSK1, NTRK2","YARS, GARS","CTDP1, SORD","CTDP1, GJB3, C10ORF2, GARS","ANG, NEFH","PCSK1, NTRK2","YARS, GARS","PRCD, ROM1","CTDP1, MAF, CRYBB3, SORD, CRYBA1","CTDP1, GJB3, C10ORF2, GARS","ANG, TARDBP, NEFH","C3, APOE, TLR3","MC4R, PCSK1, NTRK2","CHMP2B, ANG, TARDBP, NEFH","CTDP1, MAF, CRYBB3, SORD, CRYBA1","C3, APOE, TLR3","CTDP1, GJB3, C10ORF2, GARS","GJB3, CLDN14, MYH14, SLC4A11, IGF1, POU3F4, DFNA5","SIX6, CTDP1, MAF, CRYBB3, SORD, CRYBA1, PAX6, PITX3, GALK1","DIAPH1, GJB3, CLDN14, MYH14, SLC4A11, ATP2B2, IGF1, COCH, ACTG1, POU3F4, DFNA5","BSCL2, CTDP1, GJB3, HSPB1, C10ORF2, GARS","LHCGR, THRA, AIP, TSHR","RPL5, G6PD, CDAN1, RPS19, TERC, RPL11, GATA1","CTDP1, EYA1, CRYBB3, SORD, CRYBA1, CRYBB2, PAX6, BEST1, CRYGC, SIX6, MAF, GJA3, CRYAB, PITX3, GALK1","BSCL2, CTDP1, SPTLC1, GJB1, GJB3, MPZ, PRX, HSPB1, C10ORF2, GARS","PLN, ACTC1, CAV3, TNNC1, MYL2, TCAP, LDB3, ABCC9, PSEN1, MYH6, VCL","ESRRB, SLC4A11, ATP2B2, IGF1, GRHL2, COCH, ACTG1, POU3F4, RPGR, POU4F3, DIAPH1, LRTOMT, GJB3, CLDN14, MYH14, DFNA5","DHFR, RPL5, CUBN, G6PD, CDAN1, RPS19, TMPRSS6, TERC, RPL11, HBA2, GATA1","DSP, MYBPC3, CAV3, ACTN2, TNNC1, TPM1, PSEN2, LDB3, ABCC9, PSEN1, TTN, CSRP3, PLN, DES, ACTC1, MYL2, TNNT2, LMNA, TCAP, DMD, SCN5A, MYH6, VCL","DSP, MYBPC3, ACTN2, TNNC1, TPM1, PSEN2, LDB3, ABCC9, PSEN1, TTN, CSRP3, PLN, DES, ACTC1, TNNT2, LMNA, TCAP, DMD, SCN5A, VCL","KCNK9, TUSC3, CTNND2, DOCK8, SATB2, ARX, POMT1, MAGT1, PCDH19, FGD1, MECP2, SOX3, RPS6KA3, OPHN1, PAK3, GRIA3, KIRREL3, ATRX, HUWE1, CASK, UPF3B, AMMECR1, ACSL4, UBE2A, IGF1, SHROOM4, DLG3, ZDHHC9, IL1RAPL1, MCPH1, CUL4B","RYR1, VCP, CAV3, TPM3, TPM2, PGAM2, LDB3, NEB, TTN, MTM1, DNM2, MYH2, DES, CPT2, COL9A3, FLNC, CRYAB, GNE","EGR2, CTDP1, HSPB8, HSPB1, BSCL2, SPTLC1, GJB1, GJB3, GAN, MPZ, PRX, PMP22, MFN2, C10ORF2, GARS, SLC12A6","COX15, PSEN2, PRKAG2, LDB3, PSEN1, TAZ, TTN, CSRP3, PLN, SGCD, LMNA, MYO6, TNNI3, DMD, SCN5A, TMPO, FKTN, DSP, MYBPC3, CAV3, ACTN2, TNNC1, EYA4, TPM1, ABCC9, DES, ACTC1, MYL2, TNNT2, MYL3, TCAP, MYH6, VCL, MYH7","PSEN2, LDB3, PSEN1, TAZ, TTN, CSRP3, PLN, SGCD, LMNA, TNNI3, DMD, SCN5A, TMPO, FKTN, DSP, MYBPC3, ACTN2, TNNC1, EYA4, TPM1, ABCC9, DES, ACTC1, TNNT2, TCAP, VCL, MYH7","RYR1, VCP, FHL1, DYSF, ATP2A1, LDB3, TTN, MTM1, CPT2, CFL2, FLNC, CAV3, TPM3, PUS1, TPM2, PGAM2, NEB, DNM2, ACTA1, MYH2, DES, TNNT1, COL6A2, COL6A1, COL6A3, ITGA7, COL9A3, CRYAB, GNE, PNPLA2, MYH7","YARS, PRPS1, MTMR2, EGR2, HSPB8, HSPB1, LITAF, NDRG1, GDAP1, DNM2, FIG4, FGD4, SH3TC2, MPZ, LMNA, PMP22, MFN2, NEFL, KIF1B, GARS, SBF2","MYBPC3, CAV3, COX15, TNNC1, TPM1, PRKAG2, TTN, CSRP3, ACTC1, MYL2, TNNT2, MYL3, MYO6, TNNI3, MYH6, MYH7"],"Rank":[1,3,7,5,6,1,3,2,11,14,1,2,5,4,3,1,2,4,3,7,1,2,4,3,8,1,2,4,3,5,1,2,5,4,3,1,2,3,4,5,1,3,2,4,5,1,2,3,4,5,1,2,3,4,5],"Source":["OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease","OMIM_Disease"],"Term_Name":["neuropathy","mental retardation","obesity","parkinson disease","charcot-marie-tooth disease","neuropathy","cataract","mental retardation","asthma","obesity","neuropathy","charcot-marie-tooth disease","cataract","mental retardation","deafness","neuropathy","lateral sclerosis","obesity","charcot-marie-tooth disease","cataract","neuropathy","lateral sclerosis","obesity","charcot-marie-tooth disease","retinitis pigmentosa","cataract","neuropathy","lateral sclerosis","macular degeneration","obesity","lateral sclerosis","cataract","macular degeneration","neuropathy","deafness","cataract","deafness","neuropathy","adenoma","anemia","cataract","neuropathy","cardiomyopathy","deafness","anemia","cardiomyopathy","cardiomyopathy, dilated","mental retardation","myopathy","neuropathy","cardiomyopathy","cardiomyopathy, dilated","myopathy","charcot-marie-tooth disease","cardiomyopathy, hypertrophic"],"color":["#000003","#090621","#1D0C45","#370961","#500D6C","#000003","#68166E","#090621","#801F6B","#1D0C45","#000003","#500D6C","#68166E","#090621","#982765","#000003","#AF315B","#1D0C45","#500D6C","#68166E","#000003","#AF315B","#1D0C45","#500D6C","#C53D4D","#68166E","#000003","#AF315B","#D94D3D","#1D0C45","#AF315B","#68166E","#D94D3D","#000003","#982765","#68166E","#982765","#000003","#E8612B","#F37918","#68166E","#000003","#FA9306","#982765","#F37918","#FA9306","#FBB014","#090621","#F8CD37","#000003","#FA9306","#FBB014","#F8CD37","#500D6C","#F1E968"],"index":[0,1,2,3,4,9,10,11,12,13,25,26,27,28,29,43,44,45,46,47,63,64,65,66,67,83,84,85,86,87,103,104,105,106,107,123,124,125,126,127,143,144,145,146,147,163,164,165,166,167,183,184,185,186,187]},"selected":{"id":"11664"},"selection_policy":{"id":"11665"}},"id":"11611","type":"ColumnDataSource"},{"attributes":{"below":[{"id":"11629"}],"center":[{"id":"11632"},{"id":"11636"},{"id":"11656"}],"left":[{"id":"11633"}],"plot_height":1200,"plot_width":2000,"renderers":[{"id":"11648"}],"title":{"id":"11619"},"toolbar":{"id":"11638"},"toolbar_sticky":false,"x_range":{"id":"11621"},"x_scale":{"id":"11625"},"y_range":{"id":"11623"},"y_scale":{"id":"11627"}},"id":"11618","subtype":"Figure","type":"Plot"},{"attributes":{"source":{"id":"11611"}},"id":"11649","type":"CDSView"},{"attributes":{},"id":"11630","type":"BasicTicker"},{"attributes":{},"id":"11634","type":"BasicTicker"},{"attributes":{"text":"Term names from OMIM_Disease, n=5"},"id":"11619","type":"Title"},{"attributes":{"items":[{"id":"11657"}]},"id":"11656","type":"Legend"},{"attributes":{"label":{"field":"Term_Name"},"renderers":[{"id":"11648"}]},"id":"11657","type":"LegendItem"},{"attributes":{},"id":"11627","type":"LinearScale"},{"attributes":{},"id":"11613","type":"WheelZoomTool"}],"root_ids":["11618"]},"title":"Bokeh Application","version":"2.0.2"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            var fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  var docs_json = document.getElementById('11754').textContent;
+                  var render_items = [{"docid":"66da30c4-df68-4e44-8898-c3699facdcd8","root_ids":["11618"],"roots":{"11618":"c48834ab-700c-4611-82b8-db06f947b620"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    var attempts = 0;
+                    var timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        clearInterval(timer);
+                        embed_document(root);
+                      } else {
+                        attempts++;
+                        if (attempts > 100) {
+                          clearInterval(timer);
+                          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        }
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>
