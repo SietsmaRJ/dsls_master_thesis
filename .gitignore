@@ -131,3 +131,4 @@ dmypy.json
 # Misc
 .idea
 output_img/
+/side_scripts/umcg_genepanels.json
