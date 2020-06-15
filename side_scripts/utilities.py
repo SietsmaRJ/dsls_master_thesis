@@ -7,6 +7,7 @@ from bokeh.plotting import figure, ColumnDataSource, output_file
 from bokeh.models import HoverTool, WheelZoomTool, PanTool,\
     BoxZoomTool, ResetTool, SaveTool, FactorRange
 from bokeh.palettes import inferno
+import gzip
 
 # https://gist.github.com/deekayen/4148741#file-1-1000-txt
 
@@ -315,3 +316,14 @@ def split_and_count_words(x, return_value='int'):
         if not isinstance(x, list):
             x = [x]
         return x
+
+
+def get_header(file_loc, start):
+    header = None
+    with gzip.open(file_loc) as file:
+        while True:
+            line = file.readline().decode('utf-8')
+            if line.startswith(start):
+                header = line.strip().split('\t')
+                break
+    return header
