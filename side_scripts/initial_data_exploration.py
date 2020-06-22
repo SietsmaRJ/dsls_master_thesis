@@ -10,6 +10,8 @@ from sklearn.metrics import roc_auc_score, confusion_matrix, recall_score,\
 
 class PerGene:
     def __init__(self):
+        os.chdir('/home/rjsietsma/Documents/School/Master_DSLS/'
+                 'Final_Thesis/Initial_Data_exploration')
         self.execute()
 
     def execute(self):
@@ -109,6 +111,7 @@ class PerGene:
                                          'Recall/TPR', 'F-score', 'N_benign',
                                                           'N_malign', 'm_cat',
                                                           'n_snvs'])
+        var_comb.to_csv('var_comb.csv')
 
         time_before_whileloop = time.time()
         total_genes = var_comb['GeneName'].unique().shape[0]
@@ -619,4 +622,4 @@ class MultiProcess:
 
 
 if __name__ == "__main__":
-    MultiProcess()
+    PerGene()

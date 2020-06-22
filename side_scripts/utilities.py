@@ -69,6 +69,8 @@ def get_enrichr_results(enrichr_sources, user_list_ids, number_of_hits):
 
         # Prepare output dataframes for each source
         output_dir = './EnrichrAPIResults/'
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
         enrichr_url = 'http://amp.pharm.mssm.edu/Enrichr/'
 
         for iteration, source in enumerate(enrichr_sources):
