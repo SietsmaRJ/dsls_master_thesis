@@ -8,6 +8,7 @@ from bokeh.models import HoverTool, WheelZoomTool, PanTool,\
     BoxZoomTool, ResetTool, SaveTool, FactorRange
 from bokeh.palettes import inferno
 import gzip
+import numpy as np
 
 # https://gist.github.com/deekayen/4148741#file-1-1000-txt
 
@@ -329,3 +330,39 @@ def get_header(file_loc, start):
                 header = line.strip().split('\t')
                 break
     return header
+
+
+def genepanel_analysis(genepanels, data):
+    genepanel_df = pd.DataFrame(columns=['category', 'panel', 'auc'])
+    for category, panel_genes in genepanels.items():
+        for panel, genes in panel_genes.items():
+            x = np.array(data[data['gene'].isin(genes)]['auc'])
+            x_mean = x.mean()
+            genepanel_df = genepanel_df.append(
+                pd.DataFrame(
+                    {
+                        'category': [category],
+                        'panel': [panel],
+                        'auc': [x_mean]
+                    }, index=[0]
+                ), ignore_index=True
+            )
+    mann_whitney_cats = ['two-sided', 'less', 'greater']
+    return_df = pd.DataFrame(columns=mann_whitney_cats + ['category', 'compared_to'])
+    for category in genepanel_df['category'].unique():
+        x = np.array(genepanel_df[genepanel_df['category'] == category]['auc'])
+        y = np.array(genepanel_df[genepanel_df['category'] != category]['auc'])
+        output = {'category': ['all'],
+                  'compared_to': [category],
+                  'two-sided': None,
+                  'less': None,
+                  'greater': None}
+        for alternative in mann_whitney_cats:
+            output[alternative] = [stats.mannwhitneyu(
+                x, y, alternative=alternative)[1]]
+        return_df = return_df.append(
+            pd.DataFrame(
+                output, index=[0]
+            ), ignore_index=True
+        )
+    return return_df

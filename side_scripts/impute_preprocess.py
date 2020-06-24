@@ -15,13 +15,13 @@ class ImputePreprocess:
             if null_number > 0:
                 null_ratios[col] = null_number / sample_num
                 self._printf(col, null_number,
-                            round(null_number / sample_num, 2))
+                             round(null_number / sample_num, 2))
         return null_ratios
 
-    def replace_nas(self, df, Dict):
+    def replace_nas(self, df):
         for value in df.columns:
-            if df[value].isna().any() and value in Dict:
-                df[value].fillna(self._impute_values()[value], inplace=True)
+            if df[value].isna().any() and value in self._impute_values().keys():
+                df[value].fillna(self.get_impute_values(value), inplace=True)
             else:
                 continue
         return df
@@ -30,7 +30,7 @@ class ImputePreprocess:
         self._printf(type(df))
         self._printf("Readin data shape: ", df.shape)
         self._printf(df.head())
-        df = df.dropna(subset=self._cadd_vars, how="all")
+        df = df.dropna(subset=self._cadd_vars(), how="all")
         self._printf("Remove samples with no parameters, shape: ", df.shape)
         func = lambda x: np.nan if pd.isnull(
             x) or x == "." or x == 'NA' else float(
@@ -40,9 +40,9 @@ class ImputePreprocess:
         df = df.dropna(how="all")
         self._printf("Raw data loaded, shape: ", df.shape)
         self._printf("Before imputation, null ratio: \n")
-        self.examine_nas(df[self._cadd_vars])
+        self.examine_nas(df[self._cadd_vars()])
         # save null ratios
-        df = self.replace_nas(df, self._impute_values())
+        df = self.replace_nas(df)
         self._printf(
             "After imputation, there shouldn't be any nulls, but check below: \n")
         self.examine_nas(df)
@@ -64,7 +64,8 @@ class ImputePreprocess:
                                 catFeats_levels_dict=None,
                                 catFeatNames_dict=None):
         if isTrain:
-            self._printf("Determining feature levels from the training dataset.")
+            self._printf(
+                "Determining feature levels from the training dataset.")
             for catFeat in catFeats_levels_dict.keys():
                 featNames = self.return_top10_or_less_categories(data[catFeat],
                                                                  return_num=
@@ -91,7 +92,7 @@ class ImputePreprocess:
                    model_path=None, model_features=None):
         feat_cadd_object = [feat for feat in
                             imputed_data.select_dtypes(include=["O"]).columns
-                            if feat in self._cadd_vars]
+                            if feat in self._cadd_vars()]
         self._printf("Categorical variables", len(feat_cadd_object))
         num_samples = imputed_data.shape[0]
         self._printf("In total, there are %d samples" % num_samples)
@@ -228,44 +229,55 @@ class ImputePreprocess:
 
     @staticmethod
     def _impute_values():
-        return {'Ref': 'N', 'Alt': 'N', 'Consequence': 'UNKNOWN', 'GC': 0.42,
-                 'CpG': 0.02, 'motifECount': 0,
-                 'motifEScoreChng': 0, 'motifEHIPos': 0, 'oAA': 'unknown',
-                 'nAA': 'unknown', 'cDNApos': 0,
-                 'relcDNApos': 0, 'CDSpos': 0, 'relCDSpos': 0, 'protPos': 0,
-                 'relProtPos': 0, 'Domain': 'UD', 'Dst2Splice': 0,
-                 'Dst2SplType': 'unknown', 'minDistTSS': 5.5, 'minDistTSE': 5.5,
-                 'SIFTcat': 'UD', 'SIFTval': 0,
-                 'PolyPhenCat': 'unknown', 'PolyPhenVal': 0, 'priPhCons': 0.115,
-                 'mamPhCons': 0.079, 'verPhCons': 0.094,
-                 'priPhyloP': -0.033, 'mamPhyloP': -0.038, 'verPhyloP': 0.017,
-                 'bStatistic': 800, 'targetScan': 0,
-                 'mirSVR-Score': 0, 'mirSVR-E': 0, 'mirSVR-Aln': 0,
-                 'cHmmTssA': 0.0667, 'cHmmTssAFlnk': 0.0667,
-                 'cHmmTxFlnk': 0.0667, 'cHmmTx': 0.0667, 'cHmmTxWk': 0.0667,
-                 'cHmmEnhG': 0.0667, 'cHmmEnh': 0.0667,
-                 'cHmmZnfRpts': 0.0667, 'cHmmHet': 0.667, 'cHmmTssBiv': 0.667,
-                 'cHmmBivFlnk': 0.0667, 'cHmmEnhBiv': 0.0667,
-                 'cHmmReprPC': 0.0667, 'cHmmReprPCWk': 0.0667,
-                 'cHmmQuies': 0.0667, 'GerpRS': 0, 'GerpRSpval': 0,
-                 'GerpN': 1.91, 'GerpS': -0.2, 'TFBS': 0, 'TFBSPeaks': 0,
-                 'TFBSPeaksMax': 0, 'tOverlapMotifs': 0,
-                 'motifDist': 0, 'Segway': 'unknown', 'EncH3K27Ac': 0,
-                 'EncH3K4Me1': 0, 'EncH3K4Me3': 0, 'EncExp': 0,
-                 'EncNucleo': 0, 'EncOCC': 5, 'EncOCCombPVal': 0,
-                 'EncOCDNasePVal': 0, 'EncOCFairePVal': 0,
-                 'EncOCpolIIPVal': 0, 'EncOCctcfPVal': 0, 'EncOCmycPVal': 0,
-                 'EncOCDNaseSig': 0, 'EncOCFaireSig': 0,
-                 'EncOCpolIISig': 0, 'EncOCctcfSig': 0, 'EncOCmycSig': 0,
-                 'Grantham': 0, 'Dist2Mutation': 0,
-                 'Freq100bp': 0, 'Rare100bp': 0, 'Sngl100bp': 0,
-                 'Freq1000bp': 0, 'Rare1000bp': 0, 'Sngl1000bp': 0,
-                 'Freq10000bp': 0, 'Rare10000bp': 0, 'Sngl10000bp': 0,
-                 'dbscSNV-ada_score': 0,
-                 'dbscSNV-rf_score': 0}
+        return {'Ref': 'N', 'Alt': 'N', 'Consequence': 'UNKNOWN',
+                'GC': 0.42,
+                'CpG': 0.02, 'motifECount': 0,
+                'motifEScoreChng': 0, 'motifEHIPos': 0,
+                'oAA': 'unknown',
+                'nAA': 'unknown', 'cDNApos': 0,
+                'relcDNApos': 0, 'CDSpos': 0, 'relCDSpos': 0,
+                'protPos': 0,
+                'relProtPos': 0, 'Domain': 'UD', 'Dst2Splice': 0,
+                'Dst2SplType': 'unknown', 'minDistTSS': 5.5,
+                'minDistTSE': 5.5,
+                'SIFTcat': 'UD', 'SIFTval': 0,
+                'PolyPhenCat': 'unknown', 'PolyPhenVal': 0,
+                'priPhCons': 0.115,
+                'mamPhCons': 0.079, 'verPhCons': 0.094,
+                'priPhyloP': -0.033, 'mamPhyloP': -0.038,
+                'verPhyloP': 0.017,
+                'bStatistic': 800, 'targetScan': 0,
+                'mirSVR-Score': 0, 'mirSVR-E': 0, 'mirSVR-Aln': 0,
+                'cHmmTssA': 0.0667, 'cHmmTssAFlnk': 0.0667,
+                'cHmmTxFlnk': 0.0667, 'cHmmTx': 0.0667,
+                'cHmmTxWk': 0.0667,
+                'cHmmEnhG': 0.0667, 'cHmmEnh': 0.0667,
+                'cHmmZnfRpts': 0.0667, 'cHmmHet': 0.667,
+                'cHmmTssBiv': 0.667,
+                'cHmmBivFlnk': 0.0667, 'cHmmEnhBiv': 0.0667,
+                'cHmmReprPC': 0.0667, 'cHmmReprPCWk': 0.0667,
+                'cHmmQuies': 0.0667, 'GerpRS': 0, 'GerpRSpval': 0,
+                'GerpN': 1.91, 'GerpS': -0.2, 'TFBS': 0,
+                'TFBSPeaks': 0,
+                'TFBSPeaksMax': 0, 'tOverlapMotifs': 0,
+                'motifDist': 0, 'Segway': 'unknown', 'EncH3K27Ac': 0,
+                'EncH3K4Me1': 0, 'EncH3K4Me3': 0, 'EncExp': 0,
+                'EncNucleo': 0, 'EncOCC': 5, 'EncOCCombPVal': 0,
+                'EncOCDNasePVal': 0, 'EncOCFairePVal': 0,
+                'EncOCpolIIPVal': 0, 'EncOCctcfPVal': 0,
+                'EncOCmycPVal': 0,
+                'EncOCDNaseSig': 0, 'EncOCFaireSig': 0,
+                'EncOCpolIISig': 0, 'EncOCctcfSig': 0,
+                'EncOCmycSig': 0,
+                'Grantham': 0, 'Dist2Mutation': 0,
+                'Freq100bp': 0, 'Rare100bp': 0, 'Sngl100bp': 0,
+                'Freq1000bp': 0, 'Rare1000bp': 0, 'Sngl1000bp': 0,
+                'Freq10000bp': 0, 'Rare10000bp': 0, 'Sngl10000bp': 0,
+                'dbscSNV-ada_score': 0,
+                'dbscSNV-rf_score': 0}
 
-    def get_impute_values(self):
-        return self._impute_values()
+    def get_impute_values(self, key):
+        return self._impute_values()[key]
 
     def _printf(self, *args, **kwargs):
         if self.verbose:

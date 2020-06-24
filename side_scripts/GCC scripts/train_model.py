@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from side_scripts.impute_preprocess import ImputePreprocess
+from impute_preprocess import ImputePreprocess
 import pandas as pd
 import xgboost as xgb
 import scipy
@@ -20,10 +20,10 @@ class Train:
         self.train_set = None
         self.test_set = None
         self.processed_features = []
-        self.output_loc = self.output_loc
-        self.ransearch_output = os.path.join(output_loc,
+        self.output_loc = output_loc
+        self.ransearch_output = os.path.join(self.output_loc,
                                              'xgb_ransearch.pickle.dat')
-        self.optimal_model = os.path.join(output_loc,
+        self.optimal_model = os.path.join(self.output_loc,
                                           'xgb_optimal_model.pickle.dat')
         self.ip = ImputePreprocess(self.verbose)
         self.cadd_vars = self.ip.get_cadd_vars()
@@ -73,11 +73,10 @@ class Train:
         ransearch1 = RandomizedSearchCV(estimator=model_findEstimator,
                                         param_distributions=param_dist,
                                         scoring='roc_auc', n_jobs=8,
-                                        iid=False,
                                         cv=5,
                                         n_iter=20)
         self._printf('Random search starting, please hold.', flush=True)
-        ransearch1.fit(self.train_set,
+        ransearch1.fit(self.train_set[self.processed_features],
                        self.train_set['binarized_label'],
                        early_stopping_rounds=15, eval_metric=["auc"],
                        eval_set=eval_set,
