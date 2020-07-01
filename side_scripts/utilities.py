@@ -4,11 +4,14 @@ import pandas as pd
 import json
 import os
 from bokeh.plotting import figure, ColumnDataSource, output_file
-from bokeh.models import HoverTool, WheelZoomTool, PanTool,\
+from bokeh.models import HoverTool, WheelZoomTool, PanTool, \
     BoxZoomTool, ResetTool, SaveTool, FactorRange
 from bokeh.palettes import inferno
 import gzip
 import numpy as np
+import time
+from sklearn.metrics import roc_auc_score, f1_score, precision_score, \
+    recall_score
 
 # https://gist.github.com/deekayen/4148741#file-1-1000-txt
 
@@ -18,6 +21,7 @@ with open('/home/rjsietsma/Documents/1-1000.txt') as file:
     for line in lines:
         line = line.strip()
         common_used_words.append(line)
+
 
 # Define function to perform Shapiro-Wilk, Kolmogorov-Smirnov,
 # Wilcoxon-/Mann-Whitney U -test, and a pearson correlation test.
@@ -45,13 +49,13 @@ def perform_stats(x, y):
     except ValueError:
         p_mw_xy = stats.mannwhitneyu(x, y)[1]
         print(f"Wilcoxon could not be performed, \n"
-             f"Using Mann-Whitney rank test p-value: {p_mw_xy}")
+              f"Using Mann-Whitney rank test p-value: {p_mw_xy}")
     except Exception:
         print("Neither Wilcoxon nor Mann-Whitney tests could be performed!")
     try:
         p_pears_xy = stats.pearsonr(x, y)
         print(f"The Pearson correlation: {p_pears_xy[0]},\n"
-             f"p-value: {p_pears_xy[1]}")
+              f"p-value: {p_pears_xy[1]}")
     except Exception:
         print("Pearson correlation could not be performed!")
 
@@ -214,13 +218,13 @@ def plot_results_in_singleplot(source):
 def plot_results_in_singleplot_iteractive_legend(source):
     output_file(filename='./EnrichrAPIResults/combined_'
                          'enrichr_plot_results_interactive_legend.html',
-               title='Combined enrichr data sources plot IL')
+                title='Combined enrichr data sources plot IL')
     category = 'Source'
     category_items = source[category].unique()
     palette = inferno(len(category_items) + 1)
     colormap = dict(zip(category_items, palette))
     source['color'] = source[category].map(colormap)
-    p = figure(plot_width=2000, plot_height=1200,toolbar_location='right',
+    p = figure(plot_width=2000, plot_height=1200, toolbar_location='right',
                toolbar_sticky=False)
     p.title.text = f'Combined enrichr plot results.'
     for data in source[category].unique():
@@ -231,7 +235,7 @@ def plot_results_in_singleplot_iteractive_legend(source):
                   source=subsource)
     p.xaxis.axis_label = 'AUC'
     p.yaxis.axis_label = 'Adjusted P-value'
-    p.legend.click_policy="hide"
+    p.legend.click_policy = "hide"
     return p
 
 
@@ -255,19 +259,21 @@ def count_words_in_df(dataframe):
                 word_count_dict[word] += 1
         temp_df = pd.DataFrame(columns=word_count_df.columns)
         for key in word_count_dict.keys():
-            temp_temp_df = pd.DataFrame({'word':key, 'count': word_count_dict[key],
-                                        'auc': auc}, index=[0])
+            temp_temp_df = pd.DataFrame(
+                {'word': key, 'count': word_count_dict[key],
+                 'auc': auc}, index=[0])
             temp_df = temp_df.append(temp_temp_df, ignore_index=True)
         word_count_df = word_count_df.append(temp_df, ignore_index=True)
-    word_count_df.sort_values(by=['auc','count'], ascending=[True, False],
+    word_count_df.sort_values(by=['auc', 'count'], ascending=[True, False],
                               inplace=True, ignore_index=True)
     return word_count_df
 
 
 def plot_count_results(source, item):
     if item == 'word':
-        output_file(filename='./EnrichrAPIResults/enrichr_word_count_bokeh.html',
-                    title='Word count plot')
+        output_file(
+            filename='./EnrichrAPIResults/enrichr_word_count_bokeh.html',
+            title='Word count plot')
         category = 'word'
     elif item == 'gene':
         output_file(
@@ -348,7 +354,8 @@ def genepanel_analysis(genepanels, data):
                 ), ignore_index=True
             )
     mann_whitney_cats = ['two-sided', 'less', 'greater']
-    return_df = pd.DataFrame(columns=mann_whitney_cats + ['category', 'compared_to'])
+    return_df = pd.DataFrame(
+        columns=mann_whitney_cats + ['category', 'compared_to'])
     for category in genepanel_df['category'].unique():
         x = np.array(genepanel_df[genepanel_df['category'] == category]['auc'])
         y = np.array(genepanel_df[genepanel_df['category'] != category]['auc'])
@@ -366,3 +373,168 @@ def genepanel_analysis(genepanels, data):
             ), ignore_index=True
         )
     return return_df
+
+
+def analyze_auc_per_gene(dataset, output_name):
+    nsd = './not_saving_directory/'
+    if not os.path.exists(nsd):
+        os.mkdir(nsd)
+    auc_analysis_output_filename = os.path.join(nsd, output_name)
+    if not os.path.isfile(auc_analysis_output_filename):
+        auc_analysis = pd.DataFrame(columns=['gene', 'auc', 'f1', 'recall',
+                                             'fpr', 'precision',
+                                             'n_benign', 'n_malign',
+                                             'n_tot', 'n_train', 'n_test'])
+        n_tot_iters = dataset['GeneName'].unique().size
+        done_iters = 0
+        t_fls = time.time()
+        for gene in dataset['GeneName'].unique():
+            done_iters += 1
+            t_ifl = time.time()
+            if t_ifl - t_fls > 10:
+                print(f'I am stilling running,'
+                      f' done {round(done_iters / n_tot_iters * 100)}%')
+                t_fls = time.time()
+            subset = dataset[dataset['GeneName'] == gene]
+            y_true = np.array(subset['label'])
+            y_pred = np.array(subset['prediction'])
+            n_train = subset[subset['source'] == 'train'].shape[0]
+            n_test = subset[subset['source'] == 'test'].shape[0]
+            try:
+                auc = roc_auc_score(y_true, y_pred)
+                f1 = f1_score(y_true, y_pred)
+                recall = recall_score(y_true, y_pred, zero_division=0)
+                fpr = 1 - recall
+                precision = precision_score(y_true, y_pred, zero_division=0)
+                n_benign = y_true[y_true == 0].size
+                n_malign = y_true[y_true == 1].size
+                n_tot = y_true.size
+            except Exception:
+                continue
+            auc_analysis = auc_analysis.append(
+                pd.DataFrame({
+                    'gene': [gene],
+                    'auc': [auc],
+                    'f1': [f1],
+                    'recall': [recall],
+                    'fpr': [fpr],
+                    'precision': [precision],
+                    'n_benign': [n_benign],
+                    'n_malign': [n_malign],
+                    'n_tot': [n_tot],
+                    'n_train': [n_train],
+                    'n_test': [n_test]
+                }, index=[0]), ignore_index=True)
+        auc_analysis.to_csv(auc_analysis_output_filename)
+    else:
+        auc_analysis = pd.read_csv(auc_analysis_output_filename)
+    return auc_analysis
+
+
+def correct_threshold(train_results: pd.DataFrame):
+    thresholds = np.arange(0, 1, 0.001)
+    if 'chr_pos_ref_alt' in train_results.columns:
+        train_results[['chr', 'pos', 'ref', 'alt']] = train_results[
+            'chr_pos_ref_alt'].str.split('_', expand=True)
+        train_results['pos'] = train_results['pos'].astype(np.int64)
+        train_results.drop(columns=['chr_pos_ref_alt'], inplace=True)
+    train_in = pd.read_csv(
+        '~/PycharmProjects/dsls_master_thesis/'
+        'side_scripts/datafiles/train.txt.gz',
+        compression='gzip', sep='\t', low_memory=False)
+    data = train_results.merge(
+        train_in[['#Chrom', 'Pos', 'Ref', 'Alt', 'label']],
+        left_on=['chr', 'pos', 'ref', 'alt'],
+        right_on=['#Chrom', 'Pos', 'Ref', 'Alt'])
+    drop_labels = ['#Chrom', 'Pos', 'Ref', 'Alt']
+    for x in data.columns:
+        if x.endswith('_x') or x.endswith('_y'):
+            drop_labels.append(x)
+    data.drop(columns=drop_labels, inplace=True)
+
+    def apply_func_thresholding(probability, loop_threshold):
+        return_value = 0
+        if probability > loop_threshold:
+            return_value = 1
+        return return_value
+
+    data['label'].replace({'Pathogenic': 1, 'Benign': 0}, inplace=True)
+
+    true_recall = 0
+    true_threshold = 0
+    precision = 0
+    f1 = 0
+    for threshold in thresholds:
+        data['pred_label'] = data['probabilities'].apply(
+            lambda i: apply_func_thresholding(i, threshold))
+        y_pred = np.array(data['pred_label'])
+        y_true = np.array(data['label'])
+        recall = recall_score(y_pred, y_true, zero_division=0)
+        if 0.94 <= recall <= 0.96:
+            true_recall = recall
+            true_threshold = threshold
+            precision = precision_score(y_true, y_pred)
+            f1 = f1_score(y_true, y_pred)
+            break
+    print(f"The real recall of input is: {true_recall},\n"
+          f"at a threshold of: {true_threshold}.")
+    print(f"Precision score: {precision}")
+    print(f"F1 score: {f1}")
+    return true_recall, true_threshold
+
+
+def read_capice_output(capice: str):
+    output = pd.read_csv(capice,
+                         sep='\t',
+                         low_memory=False)
+    output[['chr', 'pos', 'ref', 'alt']] = output['chr_pos_ref_alt'].str.split(
+        '_', expand=True)
+    output['pos'] = output['pos'].astype(np.int64)
+    output.drop(columns=['chr_pos_ref_alt'], inplace=True)
+    return output
+
+
+def auc_analysis(train_output: pd.DataFrame, test_output: pd.DataFrame):
+    train_input = pd.read_csv('./datafiles/train.txt.gz',
+                              sep='\t',
+                              low_memory=False,
+                              usecols=['#Chrom', 'Pos', 'Ref', 'Alt', 'label'])
+    train_input.rename(columns={
+        '#Chrom': 'chr',
+        'Pos': 'pos',
+        'Ref': 'ref',
+        'Alt': 'alt'
+    }, inplace=True)
+    train_input['pos'] = train_input['pos'].astype(np.int64)
+    test_input = pd.read_csv('./datafiles/test.txt.gz',
+                             sep='\t',
+                             low_memory=False,
+                             usecols=['#Chrom', 'Pos', 'Ref', 'Alt', 'label'])
+    test_input.rename(columns={
+        '#Chrom': 'chr',
+        'Pos': 'pos',
+        'Ref': 'ref',
+        'Alt': 'alt'
+    }, inplace=True)
+    test_input['pos'] = test_input['pos'].astype(np.int64)
+    # First, the train dataset:
+    train_merge = train_output.merge(train_input)
+    train_merge['prediction'].replace({'Pathogenic': 1, 'Neutral': 0},
+                                      inplace=True)
+    train_merge['label'].replace({'Pathogenic': 1, 'Benign': 0},
+                                 inplace=True)
+    y_true_train = np.array(train_merge['label'])
+    y_pred_train = np.array(train_merge['prediction'])
+    print(f"AUC analysis of the training dataset reveals AUC: "
+          f"{roc_auc_score(y_true=y_true_train, y_score=y_pred_train)}")
+
+    # Now the test dataset
+    test_merge = test_output.merge(test_input)
+    test_merge['prediction'].replace({'Pathogenic': 1, 'Neutral': 0},
+                                      inplace=True)
+    test_merge['label'].replace({'Pathogenic': 1, 'Benign': 0},
+                                 inplace=True)
+    y_true_test = np.array(test_merge['label'])
+    y_pred_test = np.array(test_merge['prediction'])
+    print(f"AUC analysis of the testing dataset reveals AUC: "
+          f"{roc_auc_score(y_true=y_true_test, y_score=y_pred_test)}")

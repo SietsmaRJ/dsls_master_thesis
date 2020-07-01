@@ -11,8 +11,12 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 
 
 class Train:
-    def __init__(self, data_loc, output_loc, verbose):
+    def __init__(self, data_loc, output_loc, verbose, default):
         self.verbose = verbose
+        self._printf("Input location: " + data_loc)
+        self._printf("Output location: " + output_loc)
+        self.default = default
+        self._printf("Default set to: " + str(self.default))
         self.data = pd.read_csv(data_loc, sep='\t',
                                 compression='gzip',
                                 low_memory=False,
@@ -55,7 +59,28 @@ class Train:
         else:
             verbosity = 0
         self._printf('Preparing the estimator model', flush=True)
-        model_findEstimator = xgb.XGBClassifier(verbosity=verbosity,
+        if self.default:
+            model_estimator = xgb.XGBClassifier(
+                verbosity=verbosity,
+                objective='binary:logistic',
+                booster='gbtree', n_jobs=8,
+                min_child_weight=1,
+                max_delta_step=0,
+                subsample=1,
+                colsample_bytree=1,
+                colsample_bylevel=1,
+                colsample_bynode=1,
+                reg_alpha=0, reg_lambda=1,
+                scale_pos_weight=1,
+                base_score=0.5,
+                random_state=0,
+                learning_rate=0.10495845238185281,
+                n_estimators=422,
+                max_depth=15
+            )
+            ransearch1 = model_estimator
+        else:
+            model_estimator = xgb.XGBClassifier(verbosity=verbosity,
                                                 objective='binary:logistic',
                                                 booster='gbtree', n_jobs=8,
                                                 min_child_weight=1,
@@ -67,24 +92,29 @@ class Train:
                                                 scale_pos_weight=1,
                                                 base_score=0.5,
                                                 random_state=0)
+            ransearch1 = RandomizedSearchCV(estimator=model_estimator,
+                                            param_distributions=param_dist,
+                                            scoring='roc_auc', n_jobs=8,
+                                            cv=5,
+                                            n_iter=20,
+                                            verbose=verbosity)
         eval_set = [(self.test_set[self.processed_features],
                      self.test_set['binarized_label'], 'test')]
         self._printf('Random search initializing', flush=True)
-        ransearch1 = RandomizedSearchCV(estimator=model_findEstimator,
-                                        param_distributions=param_dist,
-                                        scoring='roc_auc', n_jobs=8,
-                                        cv=5,
-                                        n_iter=20)
+
         self._printf('Random search starting, please hold.', flush=True)
         ransearch1.fit(self.train_set[self.processed_features],
                        self.train_set['binarized_label'],
-                       early_stopping_rounds=15, eval_metric=["auc"],
+                       early_stopping_rounds=15,
+                       eval_metric=["auc"],
                        eval_set=eval_set,
                        verbose=True,
                        sample_weight=self.train_set['sample_weight'])
         pickle.dump(ransearch1, open(self.ransearch_output, "wb"))
 
-        pickle.dump(ransearch1.best_estimator_, open(self.optimal_model, 'wb'))
+        if not self.default:
+            pickle.dump(ransearch1.best_estimator_, open(self.optimal_model,
+                                                         'wb'))
 
     def _printf(self, *args, **kwargs):
         if self.verbose:
@@ -119,6 +149,11 @@ class ArgumentSupporter:
                               required=True,
                               help='The output directory to put the models in.')
 
+        optional.add_argument('-d',
+                              '--default',
+                              action='store_true',
+                              help='Use the python3.6 model hyperparameters.')
+
         optional.add_argument('-v',
                               '--verbose',
                               action='store_true',
@@ -143,15 +178,14 @@ class ArgumentSupporter:
 def main():
     arguments = ArgumentSupporter()
     input_loc = arguments.get_argument('file')
-    print(input_loc)
     if isinstance(input_loc, list):
         input_loc = str(input_loc[0])
     output_loc = arguments.get_argument('output')
-    print(output_loc)
     if isinstance(output_loc, list):
         output_loc = str(output_loc[0])
     verbose = arguments.get_argument('verbose')
-    train = Train(input_loc, output_loc, verbose)
+    default = arguments.get_argument('default')
+    train = Train(input_loc, output_loc, verbose, default)
     train.train()
 
 
