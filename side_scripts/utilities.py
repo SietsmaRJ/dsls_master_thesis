@@ -494,7 +494,7 @@ def read_capice_output(capice: str):
     return output
 
 
-def auc_analysis(train_output: pd.DataFrame, test_output: pd.DataFrame):
+def auc_analysis_function(train_output: pd.DataFrame, test_output: pd.DataFrame):
     train_input = pd.read_csv('./datafiles/train.txt.gz',
                               sep='\t',
                               low_memory=False,
