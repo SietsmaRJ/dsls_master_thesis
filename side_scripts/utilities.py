@@ -397,7 +397,7 @@ def analyze_auc_per_gene(dataset, output_name):
                 t_fls = time.time()
             subset = dataset[dataset['GeneName'] == gene]
             y_true = np.array(subset['label'])
-            y_pred = np.array(subset['prediction'])
+            y_pred = np.array(subset['probabilities'])
             n_train = subset[subset['source'] == 'train'].shape[0]
             n_test = subset[subset['source'] == 'test'].shape[0]
             try:
@@ -431,26 +431,45 @@ def analyze_auc_per_gene(dataset, output_name):
     return auc_analysis
 
 
-def correct_threshold(train_results: pd.DataFrame):
-    thresholds = np.arange(0, 1, 0.001)
-    if 'chr_pos_ref_alt' in train_results.columns:
-        train_results[['chr', 'pos', 'ref', 'alt']] = train_results[
-            'chr_pos_ref_alt'].str.split('_', expand=True)
-        train_results['pos'] = train_results['pos'].astype(np.int64)
-        train_results.drop(columns=['chr_pos_ref_alt'], inplace=True)
-    train_in = pd.read_csv(
-        '~/PycharmProjects/dsls_master_thesis/'
-        'side_scripts/datafiles/train.txt.gz',
-        compression='gzip', sep='\t', low_memory=False)
-    data = train_results.merge(
-        train_in[['#Chrom', 'Pos', 'Ref', 'Alt', 'label']],
-        left_on=['chr', 'pos', 'ref', 'alt'],
-        right_on=['#Chrom', 'Pos', 'Ref', 'Alt'])
-    drop_labels = ['#Chrom', 'Pos', 'Ref', 'Alt']
-    for x in data.columns:
-        if x.endswith('_x') or x.endswith('_y'):
-            drop_labels.append(x)
-    data.drop(columns=drop_labels, inplace=True)
+def correct_threshold(train_results=None, test_results=None,
+                      include_upper=True,
+                      starting=0):
+    thresholds = np.arange(starting, 1, 0.001)
+    if train_results is not None:
+        print('Doing train.')
+        train_input = pd.read_csv('./datafiles/train.txt.gz',
+                                  sep='\t',
+                                  low_memory=False,
+                                  usecols=['#Chrom', 'Pos', 'Ref', 'Alt',
+                                           'label'])
+        train_input.rename(columns={
+            '#Chrom': 'chr',
+            'Pos': 'pos',
+            'Ref': 'ref',
+            'Alt': 'alt'
+        }, inplace=True)
+        train_input['pos'] = train_input['pos'].astype(np.int64)
+        data = train_results.merge(train_input)
+    elif test_results is not None:
+        print('Doing test.')
+        test_input = pd.read_csv('./datafiles/test.txt.gz',
+                                 sep='\t',
+                                 low_memory=False,
+                                 usecols=['#Chrom', 'Pos', 'Ref', 'Alt',
+                                          'label'])
+        test_input.rename(columns={
+            '#Chrom': 'chr',
+            'Pos': 'pos',
+            'Ref': 'ref',
+            'Alt': 'alt'
+        }, inplace=True)
+        test_input['pos'] = test_input['pos'].astype(np.int64)
+        data = test_results.merge(test_input, on=['chr', 'pos', 'ref', 'alt'])
+    else:
+        raise AttributeError('Either train or test dataset must be supplied.')
+
+    if data.shape[0] < 1:
+        raise ValueError('Merge did not resolve in any datapoints.')
 
     def apply_func_thresholding(probability, loop_threshold):
         return_value = 0
@@ -464,13 +483,16 @@ def correct_threshold(train_results: pd.DataFrame):
     true_threshold = 0
     precision = 0
     f1 = 0
+    upper_thres = 1.1
+    if include_upper:
+        upper_thres = 0.96
     for threshold in thresholds:
         data['pred_label'] = data['probabilities'].apply(
             lambda i: apply_func_thresholding(i, threshold))
         y_pred = np.array(data['pred_label'])
         y_true = np.array(data['label'])
-        recall = recall_score(y_pred, y_true, zero_division=0)
-        if 0.94 <= recall <= 0.96:
+        recall = recall_score(y_pred=y_pred, y_true=y_true, zero_division=0)
+        if 0.94 <= recall <= upper_thres:
             true_recall = recall
             true_threshold = threshold
             precision = precision_score(y_true, y_pred)
@@ -494,7 +516,8 @@ def read_capice_output(capice: str):
     return output
 
 
-def auc_analysis_function(train_output: pd.DataFrame, test_output: pd.DataFrame):
+def auc_analysis_function(train_output: pd.DataFrame,
+                          test_output: pd.DataFrame):
     train_input = pd.read_csv('./datafiles/train.txt.gz',
                               sep='\t',
                               low_memory=False,
@@ -524,17 +547,17 @@ def auc_analysis_function(train_output: pd.DataFrame, test_output: pd.DataFrame)
     train_merge['label'].replace({'Pathogenic': 1, 'Benign': 0},
                                  inplace=True)
     y_true_train = np.array(train_merge['label'])
-    y_pred_train = np.array(train_merge['prediction'])
+    y_pred_train = np.array(train_merge['probabilities'])
     print(f"AUC analysis of the training dataset reveals AUC: "
           f"{roc_auc_score(y_true=y_true_train, y_score=y_pred_train)}")
 
     # Now the test dataset
     test_merge = test_output.merge(test_input)
     test_merge['prediction'].replace({'Pathogenic': 1, 'Neutral': 0},
-                                      inplace=True)
+                                     inplace=True)
     test_merge['label'].replace({'Pathogenic': 1, 'Benign': 0},
-                                 inplace=True)
+                                inplace=True)
     y_true_test = np.array(test_merge['label'])
-    y_pred_test = np.array(test_merge['prediction'])
+    y_pred_test = np.array(test_merge['probabilities'])
     print(f"AUC analysis of the testing dataset reveals AUC: "
           f"{roc_auc_score(y_true=y_true_test, y_score=y_pred_test)}")
