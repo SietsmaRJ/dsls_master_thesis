@@ -2,6 +2,7 @@
 
 from impute_preprocess import ImputePreprocess
 import pandas as pd
+import numpy as np
 import xgboost as xgb
 import scipy
 import pickle
@@ -11,26 +12,31 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 
 
 class Train:
-    def __init__(self, data_loc, output_loc, verbose, default):
+    def __init__(self, data_loc, output_loc, verbose, default,
+                 balanced_set):
         self.verbose = verbose
-        self._printf("Input location: " + data_loc)
-        self._printf("Output location: " + output_loc)
+        self._printf("Input location: {}".format(data_loc), flush=True)
+        self.data_loc = data_loc
+        self._printf("Output location: {}".format(output_loc), flush=True)
+        self.output_loc = output_loc
+        self._check_output_dir()
+        self._printf("Default set to: {}".format(str(default)),
+                     flush=True)
         self.default = default
-        self._printf("Default set to: " + str(self.default))
-        self.data = pd.read_csv(data_loc, sep='\t',
-                                compression='gzip',
-                                low_memory=False,
-                                verbose=self.verbose)
+        self._printf("Balanced DS location: {}".format(balanced_set),
+                     flush=True)
+        self.balanced_set_input = balanced_set
+        self.data = self._load_data()
         self.train_set = None
         self.test_set = None
         self.processed_features = []
-        self.output_loc = output_loc
         self.ransearch_output = os.path.join(self.output_loc,
                                              'xgb_ransearch.pickle.dat')
         self.optimal_model = os.path.join(self.output_loc,
                                           'xgb_optimal_model.pickle.dat')
         self.ip = ImputePreprocess(self.verbose)
         self.cadd_vars = self.ip.get_cadd_vars()
+
         self._prepare_data()
 
     def _prepare_data(self):
@@ -44,6 +50,109 @@ class Train:
         self.test_set = self.ip.preprocess(
             self.ip.impute(test), isTrain=False,
             model_features=self.processed_features)
+
+    def _load_data(self):
+        if self.balanced_set_input:
+            data = pd.read_csv(self.balanced_set_input,
+                               sep='\t',
+                               low_memory=False)
+            return data
+        else:
+            data_to_be_balanced = pd.read_csv(self.data_loc,
+                                              sep='\t',
+                                              compression='gzip',
+                                              low_memory=False,
+                                              verbose=self.verbose)
+            data = self._process_balance_in_the_force(data_to_be_balanced)
+            self._export_balanced(data)
+            return data
+
+    def _check_output_dir(self):
+        if not os.path.isdir(self.output_loc):
+            os.mkdir(self.output_loc)
+
+    def _export_balanced(self, balanced_ds):
+        output_name = os.path.join(self.output_loc,
+                                   'train_balanced_dataset.tsv.gz')
+        balanced_ds.to_csv(output_name,
+                           sep='\t',
+                           compression='gzip',
+                           index=False)
+        self._printf("Exported balanced ds: \n{}".format(output_name),
+                     flush=True)
+
+    def _process_balance_in_the_force(self, dataset: pd.DataFrame):
+        palpatine = dataset[dataset['binarized_label'] == 1]
+        yoda = dataset[dataset['binarized_label'] == 0]
+        anakin = pd.DataFrame(columns=dataset.columns)
+        # bins = [0, 0.1, 1]
+        bins = [0, 0.01, 0.05, 0.1, 0.5, 1]
+        for consequence in palpatine['Consequence'].unique():
+            self._printf("Processsing: {}".format(consequence), flush=True)
+            selected_pathogenic = palpatine[
+                palpatine['Consequence'] == consequence]
+            selected_neutral = yoda[yoda['Consequence'] == consequence]
+            if selected_pathogenic.shape[0] > selected_neutral.shape[0]:
+                selected_pathogenic = selected_pathogenic.sample(
+                    selected_neutral.shape[0],
+                    random_state=45
+                )
+            selected_pathogenic_histogram, bins = np.histogram(
+                selected_pathogenic['max_AF'],
+                bins=bins
+            )
+            for ind in range(len(bins) - 1):
+                lower_bound = bins[ind]
+                upper_bound = bins[ind+1]
+                selected_pathogenic_all = self._get_vars_in_range(
+                    variants=selected_pathogenic,
+                    upper=upper_bound,
+                    lower=lower_bound
+                )
+                selected_pnv_all = self._get_vars_in_range(
+                    variants=selected_neutral,
+                    upper=upper_bound,
+                    lower=lower_bound
+                )
+                sample_num = selected_pathogenic_histogram[ind]
+                if sample_num < selected_pnv_all.shape[0]:
+                    selected_pnv_currange = selected_pnv_all.sample(
+                        sample_num,
+                        random_state=45
+                    )
+                    selected_pathogenic_currange = selected_pathogenic_all
+                else:
+                    selected_pnv_currange = selected_pnv_all
+                    selected_pathogenic_currange = \
+                        selected_pathogenic_all.sample(
+                            selected_pnv_all.shape[0],
+                            random_state=45
+                        )
+                self._printf(
+                    "Sampled {} variants from Possibly Neutral Variants for:"
+                    " {}".format(selected_pnv_currange.shape[0], consequence),
+                    flush=True
+                )
+                self._printf(
+                    "Sampled {} variants from Possibly Neutral Variants for:"
+                    " {}".format(selected_pathogenic_currange.shape[0],
+                                 consequence), flush=True
+                )
+                anakin = anakin.append(
+                    selected_pnv_currange
+                )
+                anakin = anakin.append(
+                    selected_pathogenic_currange
+                )
+        return anakin
+
+    @staticmethod
+    def _get_vars_in_range(variants, upper, lower):
+        vars_in_range = variants.where(
+            (variants['max_AF'] < upper) &
+            (variants['max_AF'] >= lower)
+        ).dropna(how='all')
+        return vars_in_range
 
     def train(self):
         param_dist = {
@@ -103,6 +212,7 @@ class Train:
         self._printf('Random search initializing', flush=True)
 
         self._printf('Random search starting, please hold.', flush=True)
+        exit()
         ransearch1.fit(self.train_set[self.processed_features],
                        self.train_set['binarized_label'],
                        early_stopping_rounds=15,
@@ -159,6 +269,14 @@ class ArgumentSupporter:
                               action='store_true',
                               help='Prints messages if called.')
 
+        optional.add_argument('-b',
+                              '--balanced_ds',
+                              nargs=1,
+                              type=str,
+                              default=None,
+                              help='Location of the balanced dataset.'
+                                   ' If not given, will output')
+
         return parser
 
     def get_argument(self, argument_key):
@@ -183,9 +301,14 @@ def main():
     output_loc = arguments.get_argument('output')
     if isinstance(output_loc, list):
         output_loc = str(output_loc[0])
+    balanced = arguments.get_argument('balanced_ds')
+    if isinstance(balanced, list):
+        balanced = str(balanced[0])
     verbose = arguments.get_argument('verbose')
     default = arguments.get_argument('default')
-    train = Train(input_loc, output_loc, verbose, default)
+    train = Train(data_loc=input_loc, output_loc=output_loc,
+                  verbose=verbose, default=default,
+                  balanced_set=balanced)
     train.train()
 
 
