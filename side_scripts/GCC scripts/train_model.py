@@ -55,12 +55,12 @@ class Train:
         if self.balanced_set_input:
             data = pd.read_csv(self.balanced_set_input,
                                sep='\t',
-                               low_memory=False)
+                               low_memory=False,
+                               verbose=self.verbose)
             return data
         else:
             data_to_be_balanced = pd.read_csv(self.data_loc,
                                               sep='\t',
-                                              compression='gzip',
                                               low_memory=False,
                                               verbose=self.verbose)
             data = self._process_balance_in_the_force(data_to_be_balanced)
@@ -78,8 +78,8 @@ class Train:
                            sep='\t',
                            compression='gzip',
                            index=False)
-        self._printf("Exported balanced ds: \n{}".format(output_name),
-                     flush=True)
+        self._printf("Exported balanced ds: \n{}\n(Shape={})".format(
+            output_name, balanced_ds.shape), flush=True)
 
     def _process_balance_in_the_force(self, dataset: pd.DataFrame):
         palpatine = dataset[dataset['binarized_label'] == 1]
@@ -103,7 +103,7 @@ class Train:
             )
             for ind in range(len(bins) - 1):
                 lower_bound = bins[ind]
-                upper_bound = bins[ind+1]
+                upper_bound = bins[ind + 1]
                 selected_pathogenic_all = self._get_vars_in_range(
                     variants=selected_pathogenic,
                     upper=upper_bound,
@@ -130,13 +130,21 @@ class Train:
                         )
                 self._printf(
                     "Sampled {} variants from Possibly Neutral Variants for:"
-                    " {}".format(selected_pnv_currange.shape[0], consequence),
+                    " {} (in range of: {} - {})".format(
+                        selected_pnv_currange.shape[0],
+                        consequence,
+                        lower_bound,
+                        upper_bound),
                     flush=True
                 )
                 self._printf(
-                    "Sampled {} variants from Possibly Neutral Variants for:"
-                    " {}".format(selected_pathogenic_currange.shape[0],
-                                 consequence), flush=True
+                    "Sampled {} variants from Possibly Pathogenic Variants for:"
+                    " {} (in range of: {} - {})".format(
+                        selected_pathogenic_currange.shape[0],
+                        consequence,
+                        lower_bound,
+                        upper_bound),
+                    flush=True
                 )
                 anakin = anakin.append(
                     selected_pnv_currange
@@ -212,7 +220,6 @@ class Train:
         self._printf('Random search initializing', flush=True)
 
         self._printf('Random search starting, please hold.', flush=True)
-        exit()
         ransearch1.fit(self.train_set[self.processed_features],
                        self.train_set['binarized_label'],
                        early_stopping_rounds=15,
@@ -244,11 +251,11 @@ class ArgumentSupporter:
         required = parser.add_argument_group("Required arguments")
         optional = parser.add_argument_group("Optional arguments")
 
-        required.add_argument('-f',
+        optional.add_argument('-f',
                               '--file',
                               nargs=1,
                               type=str,
-                              required=True,
+                              default=None,
                               help='The location of the training file.\n'
                                    '(Must be a gzipped TSV file without index)')
 
@@ -306,10 +313,20 @@ def main():
         balanced = str(balanced[0])
     verbose = arguments.get_argument('verbose')
     default = arguments.get_argument('default')
+    _check_input(input_loc, balanced)
     train = Train(data_loc=input_loc, output_loc=output_loc,
                   verbose=verbose, default=default,
                   balanced_set=balanced)
     train.train()
+
+
+def _check_input(data_loc, balanced_loc):
+    if data_loc is None and balanced_loc is None:
+        raise InputError('Data location must be specified.')
+
+
+class InputError(Exception):
+    pass
 
 
 if __name__ == '__main__':
