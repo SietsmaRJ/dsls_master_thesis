@@ -385,6 +385,16 @@ def analyze_auc_per_gene(dataset, output_name):
                                              'fpr', 'precision',
                                              'n_benign', 'n_malign',
                                              'n_tot', 'n_train', 'n_test'])
+        dataset['label'].replace({
+            'Pathogenic': 1,
+            'Benign': 0,
+            'Neutral': 0
+        }, inplace=True)
+        dataset['prediction'].replace({
+            'Pathogenic': 1,
+            'Benign': 0,
+            'Neutral': 0
+        }, inplace=True)
         n_tot_iters = dataset['GeneName'].unique().size
         done_iters = 0
         t_fls = time.time()
@@ -396,20 +406,21 @@ def analyze_auc_per_gene(dataset, output_name):
                       f' done {round(done_iters / n_tot_iters * 100)}%')
                 t_fls = time.time()
             subset = dataset[dataset['GeneName'] == gene]
-            y_true = np.array(subset['label'])
-            y_pred = np.array(subset['probabilities'])
-            n_train = subset[subset['source'] == 'train'].shape[0]
-            n_test = subset[subset['source'] == 'test'].shape[0]
-            try:
+            if subset['label'].unique().size > 1:
+                y_true = np.array(subset['label'])
+                y_pred = np.array(subset['probabilities'])
+                y_pred_label = np.array(subset['prediction'])
+                n_train = subset[subset['source'] == 'train'].shape[0]
+                n_test = subset[subset['source'] == 'test'].shape[0]
                 auc = roc_auc_score(y_true, y_pred)
-                f1 = f1_score(y_true, y_pred)
-                recall = recall_score(y_true, y_pred, zero_division=0)
+                f1 = f1_score(y_true, y_pred_label)
+                recall = recall_score(y_true, y_pred_label, zero_division=0)
                 fpr = 1 - recall
-                precision = precision_score(y_true, y_pred, zero_division=0)
+                precision = precision_score(y_true, y_pred_label, zero_division=0)
                 n_benign = y_true[y_true == 0].size
                 n_malign = y_true[y_true == 1].size
                 n_tot = y_true.size
-            except Exception:
+            else:
                 continue
             auc_analysis = auc_analysis.append(
                 pd.DataFrame({
@@ -489,7 +500,7 @@ def correct_threshold(train_results=None, test_results=None,
     for threshold in thresholds:
         data['pred_label'] = data['probabilities'].apply(
             lambda i: apply_func_thresholding(i, threshold))
-        y_pred = np.array(data['pred_label'])
+        y_pred = np.array(data['probabilities'])
         y_true = np.array(data['label'])
         recall = recall_score(y_pred=y_pred, y_true=y_true, zero_division=0)
         if 0.94 <= recall <= upper_thres:
@@ -517,7 +528,8 @@ def read_capice_output(capice: str):
 
 
 def auc_analysis_function(train_output: pd.DataFrame,
-                          test_output: pd.DataFrame):
+                          test_output: pd.DataFrame,
+                          return_value=False):
     train_input = pd.read_csv('./datafiles/train.txt.gz',
                               sep='\t',
                               low_memory=False,
@@ -542,8 +554,6 @@ def auc_analysis_function(train_output: pd.DataFrame,
     test_input['pos'] = test_input['pos'].astype(np.int64)
     # First, the train dataset:
     train_merge = train_output.merge(train_input)
-    train_merge['prediction'].replace({'Pathogenic': 1, 'Neutral': 0},
-                                      inplace=True)
     train_merge['label'].replace({'Pathogenic': 1, 'Benign': 0},
                                  inplace=True)
     y_true_train = np.array(train_merge['label'])
@@ -553,11 +563,18 @@ def auc_analysis_function(train_output: pd.DataFrame,
 
     # Now the test dataset
     test_merge = test_output.merge(test_input)
-    test_merge['prediction'].replace({'Pathogenic': 1, 'Neutral': 0},
-                                     inplace=True)
     test_merge['label'].replace({'Pathogenic': 1, 'Benign': 0},
                                 inplace=True)
     y_true_test = np.array(test_merge['label'])
     y_pred_test = np.array(test_merge['probabilities'])
     print(f"AUC analysis of the testing dataset reveals AUC: "
           f"{roc_auc_score(y_true=y_true_test, y_score=y_pred_test)}")
+
+    if return_value:
+        train_merge['label'].replace({1: 'Pathogenic',
+                                      0: 'Benign'},
+                                     inplace=True)
+        test_merge['label'].replace({1: 'Pathogenic',
+                                     0: 'Benign'},
+                                    inplace=True)
+        return train_merge, test_merge
