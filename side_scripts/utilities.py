@@ -344,18 +344,20 @@ def genepanel_analysis(genepanels, data):
         for panel, genes in panel_genes.items():
             x = np.array(data[data['gene'].isin(genes)]['auc'])
             x_mean = x.mean()
+            x_std = x.std()
             genepanel_df = genepanel_df.append(
                 pd.DataFrame(
                     {
                         'category': [category],
                         'panel': [panel],
-                        'auc': [x_mean]
+                        'auc': [x_mean],
+                        'std': [x_std]
                     }, index=[0]
                 ), ignore_index=True
             )
     mann_whitney_cats = ['two-sided', 'less', 'greater']
     return_df = pd.DataFrame(
-        columns=mann_whitney_cats + ['category', 'compared_to'])
+        columns=mann_whitney_cats + ['category', 'compared_to', 'mean', 'std'])
     for category in genepanel_df['category'].unique():
         x = np.array(genepanel_df[genepanel_df['category'] == category]['auc'])
         y = np.array(genepanel_df[genepanel_df['category'] != category]['auc'])
@@ -363,7 +365,10 @@ def genepanel_analysis(genepanels, data):
                   'compared_to': [category],
                   'two-sided': None,
                   'less': None,
-                  'greater': None}
+                  'greater': None,
+                  'mean': [x.mean()],
+                  'std': [x.std()]
+                  }
         for alternative in mann_whitney_cats:
             output[alternative] = [stats.mannwhitneyu(
                 x, y, alternative=alternative)[1]]
