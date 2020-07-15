@@ -342,7 +342,8 @@ def genepanel_analysis(genepanels, data):
     genepanel_df = pd.DataFrame(columns=['category', 'panel', 'auc'])
     for category, panel_genes in genepanels.items():
         for panel, genes in panel_genes.items():
-            x = np.array(data[data['gene'].isin(genes)]['auc'])
+            subset = data[data['gene'].isin(genes)]
+            x = np.array(subset['auc'])
             x_mean = x.mean()
             x_std = x.std()
             genepanel_df = genepanel_df.append(
@@ -351,15 +352,21 @@ def genepanel_analysis(genepanels, data):
                         'category': [category],
                         'panel': [panel],
                         'auc': [x_mean],
-                        'std': [x_std]
+                        'std': [x_std],
+                        'n_benign': [subset['n_benign'].sum()],
+                        'n_malign': [subset['n_malign'].sum()],
+                        'n_tot': [subset['n_tot'].sum()],
+                        'n_train': [subset['n_train'].sum()]
                     }, index=[0]
                 ), ignore_index=True
             )
     mann_whitney_cats = ['two-sided', 'less', 'greater']
     return_df = pd.DataFrame(
-        columns=mann_whitney_cats + ['category', 'compared_to', 'mean', 'std'])
+        columns=mann_whitney_cats + ['category', 'compared_to', 'mean', 'std',
+                                     'n_benign','n_malign','n_tot','n_train'])
     for category in genepanel_df['category'].unique():
-        x = np.array(genepanel_df[genepanel_df['category'] == category]['auc'])
+        subset = genepanel_df[genepanel_df['category'] == category]
+        x = np.array(subset['auc'])
         y = np.array(genepanel_df[genepanel_df['category'] != category]['auc'])
         output = {'category': ['all'],
                   'compared_to': [category],
@@ -367,7 +374,11 @@ def genepanel_analysis(genepanels, data):
                   'less': None,
                   'greater': None,
                   'mean': [x.mean()],
-                  'std': [x.std()]
+                  'std': [x.std()],
+                  'n_benign': [int(subset['n_benign'].sum())],
+                  'n_malign': [int(subset['n_malign'].sum())],
+                  'n_tot': [int(subset['n_tot'].sum())],
+                  'n_train': [int(subset['n_train'].sum())]
                   }
         for alternative in mann_whitney_cats:
             output[alternative] = [stats.mannwhitneyu(
@@ -443,7 +454,8 @@ def analyze_auc_per_gene(dataset, output_name):
                 }, index=[0]), ignore_index=True)
         auc_analysis.to_csv(auc_analysis_output_filename)
     else:
-        auc_analysis = pd.read_csv(auc_analysis_output_filename)
+        auc_analysis = pd.read_csv(auc_analysis_output_filename,
+                                   index_col=0)
     return auc_analysis
 
 
