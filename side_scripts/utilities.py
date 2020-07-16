@@ -338,14 +338,34 @@ def get_header(file_loc, start):
     return header
 
 
-def genepanel_analysis(genepanels, data):
+def genepanel_analysis(genepanels, data, is_balanced=False):
     genepanel_df = pd.DataFrame(columns=['category', 'panel', 'auc'])
+    if is_balanced:
+        balanced_ds = pd.read_csv('./datafiles/train_balanced_dataset.tsv.gz',
+                                  sep='\t',
+                                  low_memory=False)
+        balanced_ds['label'].replace({
+            'Pathogenic': 1,
+            'Benign': 0
+        }, inplace=True)
+
     for category, panel_genes in genepanels.items():
         for panel, genes in panel_genes.items():
             subset = data[data['gene'].isin(genes)]
             x = np.array(subset['auc'])
             x_mean = x.mean()
             x_std = x.std()
+            if is_balanced:
+                subset_balanced = balanced_ds[balanced_ds['GeneName'].isin(genes)]
+                n_benign = subset_balanced[subset_balanced['label'] == 0].shape[0]
+                n_malign = subset_balanced[subset_balanced['label'] == 1].shape[0]
+                n_tot = n_benign + n_malign
+                n_train = subset_balanced.shape[0]
+            else:
+                n_benign = subset['n_benign'].sum()
+                n_malign = subset['n_malign'].sum()
+                n_tot = n_benign + n_malign
+                n_train = subset['n_train'].sum()
             genepanel_df = genepanel_df.append(
                 pd.DataFrame(
                     {
@@ -353,10 +373,10 @@ def genepanel_analysis(genepanels, data):
                         'panel': [panel],
                         'auc': [x_mean],
                         'std': [x_std],
-                        'n_benign': [subset['n_benign'].sum()],
-                        'n_malign': [subset['n_malign'].sum()],
-                        'n_tot': [subset['n_tot'].sum()],
-                        'n_train': [subset['n_train'].sum()]
+                        'n_benign': [n_benign],
+                        'n_malign': [n_malign],
+                        'n_tot': [n_tot],
+                        'n_train': [n_train]
                     }, index=[0]
                 ), ignore_index=True
             )
