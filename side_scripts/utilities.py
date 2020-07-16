@@ -338,10 +338,10 @@ def get_header(file_loc, start):
     return header
 
 
-def genepanel_analysis(genepanels, data, is_balanced=False):
+def genepanel_analysis(genepanels, data, is_balanced_loc=False):
     genepanel_df = pd.DataFrame(columns=['category', 'panel', 'auc'])
-    if is_balanced:
-        balanced_ds = pd.read_csv('./datafiles/train_balanced_dataset.tsv.gz',
+    if is_balanced_loc:
+        balanced_ds = pd.read_csv(is_balanced_loc,
                                   sep='\t',
                                   low_memory=False)
         balanced_ds['label'].replace({
@@ -355,7 +355,7 @@ def genepanel_analysis(genepanels, data, is_balanced=False):
             x = np.array(subset['auc'])
             x_mean = x.mean()
             x_std = x.std()
-            if is_balanced:
+            if is_balanced_loc:
                 subset_balanced = balanced_ds[balanced_ds['GeneName'].isin(genes)]
                 n_benign = subset_balanced[subset_balanced['label'] == 0].shape[0]
                 n_malign = subset_balanced[subset_balanced['label'] == 1].shape[0]
