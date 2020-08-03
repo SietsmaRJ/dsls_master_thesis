@@ -133,7 +133,7 @@ class PerGene:
             exon_subset = exons[exons['gene'] == genename]
             n_snvs = subset_data['GeneName'].count()
             y_true = np.array(subset_data['label'])
-            y_pred = np.array(subset_data['prediction'])
+            y_pred = np.array(subset_data['probabilities'])
             has_m_cat = None
             if len(set(y_true)) > 1 and len(set(y_pred)) > 1:
                 auc = metrics.roc_auc_score(y_true, y_pred)

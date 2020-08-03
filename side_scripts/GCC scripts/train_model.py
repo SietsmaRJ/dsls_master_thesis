@@ -57,12 +57,14 @@ class Train:
                                sep='\t',
                                low_memory=False,
                                verbose=self.verbose)
+            self._printf("Data loaded with shape: ", data.shape)
             return data
         else:
             data_to_be_balanced = pd.read_csv(self.data_loc,
                                               sep='\t',
                                               low_memory=False,
                                               verbose=self.verbose)
+            self._printf("Data loaded with shape: ", data_to_be_balanced.shape)
             data = self._process_balance_in_the_force(data_to_be_balanced)
             self._export_balanced(data)
             return data
@@ -256,8 +258,10 @@ class ArgumentSupporter:
                               nargs=1,
                               type=str,
                               default=None,
-                              help='The location of the training file.\n'
-                                   '(Must be a gzipped TSV file without index)')
+                              help='The location of the training file.'
+                                   ' (Must be a gzipped'
+                                   ' TSV file without index).'
+                                   ' Will be made balanced.')
 
         required.add_argument('-o',
                               '--output',
@@ -282,7 +286,9 @@ class ArgumentSupporter:
                               type=str,
                               default=None,
                               help='Location of the balanced dataset.'
-                                   ' If not given, will output')
+                                   ' If not given,'
+                                   ' will output dataset to output.'
+                                   ' (Assumes balanced).')
 
         return parser
 
