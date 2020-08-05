@@ -71,7 +71,7 @@ class Train:
 
     def _check_output_dir(self):
         if not os.path.isdir(self.output_loc):
-            os.mkdir(self.output_loc)
+            os.makedirs(self.output_loc)
 
     def _export_balanced(self, balanced_ds):
         output_name = os.path.join(self.output_loc,
