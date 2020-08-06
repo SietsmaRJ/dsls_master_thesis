@@ -12,6 +12,9 @@ import numpy as np
 import time
 from sklearn.metrics import roc_auc_score, f1_score, precision_score, \
     recall_score
+import pickle
+from matplotlib import pyplot as plt
+from bokeh.palettes import viridis
 
 # https://gist.github.com/deekayen/4148741#file-1-1000-txt
 
@@ -21,6 +24,10 @@ with open('/home/rjsietsma/Documents/1-1000.txt') as file:
     for line in lines:
         line = line.strip()
         common_used_words.append(line)
+
+with open('./umcg_genepanels.json', 'r') as panels:
+    genepanels = json.load(panels)
+    genepanels.pop('5GPM', None)
 
 
 # Define function to perform Shapiro-Wilk, Kolmogorov-Smirnov,
@@ -417,6 +424,7 @@ def analyze_auc_per_gene(dataset, output_name):
         os.mkdir(nsd)
     auc_analysis_output_filename = os.path.join(nsd, output_name)
     if not os.path.isfile(auc_analysis_output_filename):
+        print(f"File {auc_analysis_output_filename} not found, creating.")
         auc_analysis = pd.DataFrame(columns=['gene', 'auc', 'f1', 'recall',
                                              'fpr', 'precision',
                                              'n_benign', 'n_malign',
@@ -474,6 +482,7 @@ def analyze_auc_per_gene(dataset, output_name):
                 }, index=[0]), ignore_index=True)
         auc_analysis.to_csv(auc_analysis_output_filename)
     else:
+        print(f"File {auc_analysis_output_filename} found. Loading.")
         auc_analysis = pd.read_csv(auc_analysis_output_filename,
                                    index_col=0)
     return auc_analysis
@@ -615,3 +624,106 @@ def auc_analysis_function(train_output: pd.DataFrame,
                                      0: 'Benign'},
                                     inplace=True)
         return train_merge, test_merge
+
+
+def full_auc_analysis(curr_setup, train_loc,
+                      test_loc, auc_analysis_name,
+                      training_set_loc=False,
+                      model=False):
+    hyperparameters = ['learning_rate', 'n_estimators', 'max_depth']
+    if model:
+        loaded_model = pickle.load(open(model, 'rb'))
+        for parameter in hyperparameters:
+            print(f"Parameter {parameter} is "
+                  f"set to {loaded_model.get_params()[parameter]}")
+    if training_set_loc:
+        training_set = pd.read_csv(training_set_loc, sep='\t', low_memory=False)
+        print(f'There are {training_set.shape[0]} samples in the training set.')
+    train_output = read_capice_output(train_loc)
+    test_output = read_capice_output(test_loc)
+    train_output, test_output = auc_analysis_function(train_output,
+                                                      test_output,
+                                                      return_value=True)
+    train_output['source'] = 'train'
+    test_output['source'] = 'test'
+    full = train_output.append(test_output)
+    full.drop_duplicates(subset=['chr', 'pos', 'ref', 'alt'], inplace=True)
+    auc_analysis = analyze_auc_per_gene(
+        full,
+        auc_analysis_name
+    )
+    print(f"Top 10 worst performing genes: \n"
+          f"{auc_analysis.sort_values(by='auc').head(10)}")
+    umcg_genepanel_analysis = genepanel_analysis(
+        genepanels,
+        auc_analysis,
+        is_balanced_loc=training_set_loc
+    )
+    print(f"UMCG genepanels Mann-Whitney analysis: \n"
+          f"{umcg_genepanel_analysis}")
+    print(f"The mean of the M-W analysis AUC: "
+          f"{umcg_genepanel_analysis['mean'].mean()}")
+    y_mean = np.array(umcg_genepanel_analysis['mean'])
+    y_std = np.array(umcg_genepanel_analysis['std'])
+    x = np.arange(y_mean.size)
+    fig, axes = plt.subplots(nrows=2, figsize=(200, 100), sharex=True)
+    umcg_genepanel_analysis.plot(y=['two-sided', 'less', 'greater'],
+                                 x='compared_to', kind='bar',
+                                 colormap='viridis', figsize=(10, 5),
+                                 title=f'Mann-Whitney analysis of: {curr_setup}',
+                                 ax=axes[0])
+    axes[0].hlines(y=0.05, xmin=-10, xmax=100)
+    axes[0].set_ylabel('P-value')
+    axes[0].set_xlabel('Panel')
+    axes[0].legend(loc='upper right', bbox_to_anchor=(1.2, 1))
+    axes[1].errorbar(y=y_mean, x=x, yerr=y_std, uplims=True, lolims=True)
+    axes[1].set_ylabel('AUC')
+    # axes[1].set_ylim((0.8, 1.01))
+    plt.xticks(rotation=90)
+    plt.show()
+    categories = umcg_genepanel_analysis['compared_to'].unique()
+    pallette = viridis(umcg_genepanel_analysis.shape[0])
+    colormap = dict(zip(categories, pallette))
+    umcg_genepanel_analysis['color'] = umcg_genepanel_analysis[
+        'compared_to'].map(colormap)
+    fig = plt.figure()
+    for compared_to in umcg_genepanel_analysis['compared_to'].values:
+        subset = umcg_genepanel_analysis[
+            umcg_genepanel_analysis['compared_to'] == compared_to]
+        x = subset['n_tot'].values
+        y = subset['mean'].values
+        color = subset['color'].values
+        plt.scatter(x, y, c=color, label=compared_to)
+    plt.legend(loc='lower right', bbox_to_anchor=(1.6, -0.28))
+    plt.title(f'AUC vs total plot of: {curr_setup}')
+    plt.xlabel('n_tot')
+    plt.ylabel('AUC')
+    plt.show()
+    fig = plt.figure()
+    for compared_to in umcg_genepanel_analysis['compared_to'].values:
+        subset = umcg_genepanel_analysis[
+            umcg_genepanel_analysis['compared_to'] == compared_to]
+        x = subset['n_benign'].values
+        y = subset['mean'].values
+        color = subset['color'].values
+        plt.scatter(x, y, c=color, label=compared_to)
+    plt.legend(loc='lower right', bbox_to_anchor=(1.6, -0.28))
+    plt.title(f'AUC vs benign plot of: {curr_setup}')
+    plt.xlabel('n_benign')
+    plt.ylabel('AUC')
+    plt.show()
+    fig = plt.figure()
+    for compared_to in umcg_genepanel_analysis['compared_to'].values:
+        subset = umcg_genepanel_analysis[
+            umcg_genepanel_analysis['compared_to'] == compared_to]
+        x = subset['n_malign'].values
+        y = subset['mean'].values
+        color = subset['color'].values
+        plt.scatter(x, y, c=color, label=compared_to)
+    plt.legend(loc='lower right', bbox_to_anchor=(1.6, -0.28))
+    plt.title(f'AUC vs malign plot of: {curr_setup}')
+    plt.xlabel('n_malign')
+    plt.ylabel('AUC')
+    plt.show()
+
+
