@@ -30,6 +30,34 @@ with open('./umcg_genepanels.json', 'r') as panels:
     genepanels.pop('5GPM', None)
 
 
+def translate_genepanels_to_engrish(UMCG_Genepanels):
+    translations = {
+        "Neurogenetica": "Neurogenetics",
+        "Amyloidose": "Amyloidosis",
+        "Hart- en vaatziekten": "Cardiovascular",
+        "Primaire Immuundeficiëntie": "Primary Immunodeficiency",
+        "Huidziekten": "Skin",
+        "Epilepsie": "Epilepsy",
+        "Angio-Oedeem": "Angioedema",
+        "Metabole & Leverziekten": "Metabolic",
+        "Hyper-/ hypofosfatemie": "Hyper-/ hypophosphatemia",
+        "Mitochondriele aandoeningen": "Mitochondria",
+        "Fertiliteit": "Fertility",
+        "Aangeboren hartafwijkingen": "Congenital heart defects",
+        "Erfelijke Kanker": "Hereditary cancer",
+        "Cardiomyopathie bij kinderen": "Early onset cardiomyopathy",
+        "Noonan syndroom": "Noonan syndrome",
+        "Primaire Cilliare Dyskinesie": "Primary ciliary dyskinesia",
+        "Ontwikkelingsachterstand (OA)": "Developmental disorders",
+        "Leukemie-Lymfoom": "Leukemia-Lymphoma"
+    }
+    for key, value in translations.items():
+        UMCG_Genepanels[value] = UMCG_Genepanels.pop(key)
+    return UMCG_Genepanels
+
+
+genepanels = translate_genepanels_to_engrish(genepanels)
+
 # Define function to perform Shapiro-Wilk, Kolmogorov-Smirnov,
 # Wilcoxon-/Mann-Whitney U -test, and a pearson correlation test.
 
@@ -676,6 +704,7 @@ def full_auc_analysis(curr_setup, train_loc,
     axes[0].set_ylabel('P-value')
     axes[0].set_xlabel('Panel')
     axes[0].legend(loc='upper right', bbox_to_anchor=(1.2, 1))
+    # //TODO: Make sure the points are not connected by a line.
     axes[1].errorbar(y=y_mean, x=x, yerr=y_std, uplims=True, lolims=True)
     axes[1].set_ylabel('AUC')
     # axes[1].set_ylim((0.8, 1.01))
