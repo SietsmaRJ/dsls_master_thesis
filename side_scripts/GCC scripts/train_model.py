@@ -258,10 +258,21 @@ class ArgumentSupporter:
                               nargs=1,
                               type=str,
                               default=None,
-                              help='The location of the training file.'
-                                   ' (Must be a gzipped'
-                                   ' TSV file without index).'
-                                   ' Will be made balanced.')
+                              help='The location of the TSV training file. '
+                                   'Will be made balanced, '
+                                   'this balanced dataset will '
+                                   'be output to -o. '
+                                   'Will cause bias if training '
+                                   'file contains indexing numbers.')
+
+        optional.add_argument('-b',
+                              '--balanced_ds',
+                              nargs=1,
+                              type=str,
+                              default=None,
+                              help='Use this argument if you already have a '
+                                   'balanced dataset or dont\'t want to use '
+                                   'a balanced dataset.')
 
         required.add_argument('-o',
                               '--output',
@@ -279,16 +290,6 @@ class ArgumentSupporter:
                               '--verbose',
                               action='store_true',
                               help='Prints messages if called.')
-
-        optional.add_argument('-b',
-                              '--balanced_ds',
-                              nargs=1,
-                              type=str,
-                              default=None,
-                              help='Location of the balanced dataset.'
-                                   ' If not given,'
-                                   ' will output dataset to output.'
-                                   ' (Assumes balanced).')
 
         return parser
 
