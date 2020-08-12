@@ -692,8 +692,13 @@ def full_auc_analysis(curr_setup, train_loc,
     print(f"The mean of the M-W analysis AUC: "
           f"{umcg_genepanel_analysis['mean'].mean()}")
     y_mean = np.array(umcg_genepanel_analysis['mean'])
+    print('\n\n\n')
+    print(y_mean)
     y_std = np.array(umcg_genepanel_analysis['std'])
+    print(y_std)
     x = np.arange(y_mean.size)
+    print(x)
+    print('\n\n\n')
     fig, axes = plt.subplots(nrows=2, figsize=(200, 100), sharex=True)
     umcg_genepanel_analysis.plot(y=['two-sided', 'less', 'greater'],
                                  x='compared_to', kind='bar',
@@ -704,8 +709,7 @@ def full_auc_analysis(curr_setup, train_loc,
     axes[0].set_ylabel('P-value')
     axes[0].set_xlabel('Panel')
     axes[0].legend(loc='upper right', bbox_to_anchor=(1.2, 1))
-    # //TODO: Make sure the points are not connected by a line.
-    axes[1].errorbar(y=y_mean, x=x, yerr=y_std, uplims=True, lolims=True)
+    axes[1].errorbar(y=y_mean, x=x, yerr=y_std, uplims=True, lolims=True, ls='None', color='k', capsize=0, elinewidth=3)
     axes[1].set_ylabel('AUC')
     # axes[1].set_ylim((0.8, 1.01))
     plt.xticks(rotation=90)
