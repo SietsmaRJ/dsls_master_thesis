@@ -704,7 +704,7 @@ def full_auc_analysis(curr_setup, train_loc,
     axes[1].errorbar(y=umcg_genepanel_analysis['mean'],
                      x=umcg_genepanel_analysis['compared_to'],
                      yerr=umcg_genepanel_analysis['std'],
-                     uplims=True, lolims=True, ls='None', color='k',
+                     ls='None', color='k', fmt='o',
                      capsize=0, elinewidth=3)
     axes[1].set_ylabel('AUC')
     # axes[1].set_ylim((0.8, 1.01))
