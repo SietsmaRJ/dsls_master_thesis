@@ -1,0 +1,1 @@
+Underlying directories have 9 subdirectories, called 10 to 90 incrementing with 10. This number represents the percentage of TESTING size, not training size!

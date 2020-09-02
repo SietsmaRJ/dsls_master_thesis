@@ -1,5 +1,26 @@
 #!/usr/bin/env python3
 
+"""
+    File:         train_model.py
+    Created:      2020/06/22
+    Last Changed: 2020/08/18
+    Author:       R.J. Sietsma
+
+    Copyright 2020 R.J. Sietsma
+
+    Licensed under the GNU Lesser General Public License;
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       https://www.gnu.org/licenses/lgpl-3.0.en.html
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
 from impute_preprocess import ImputePreprocess
 import pandas as pd
 import numpy as np
@@ -13,7 +34,7 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 
 class Train:
     def __init__(self, data_loc, output_loc, verbose, default,
-                 balanced_set):
+                 balanced_set, split):
         self.verbose = verbose
         self._printf("Input location: {}".format(data_loc), flush=True)
         self.data_loc = data_loc
@@ -25,8 +46,16 @@ class Train:
         self.default = default
         self._printf("Balanced DS location: {}".format(balanced_set),
                      flush=True)
+        self.split = split
+        self._printf("Split data set to: {}".format(split))
         self.balanced_set_input = balanced_set
         self.data = self._load_data()
+        if self.split:
+            self._split_data()
+        if not self.balanced_set_input:
+            self._export_dataset(self.data,
+                                 name='train_balanced_dataset',
+                                 feature='balanced ds')
         self.train_set = None
         self.test_set = None
         self.processed_features = []
@@ -36,7 +65,6 @@ class Train:
                                           'xgb_optimal_model.pickle.dat')
         self.ip = ImputePreprocess(self.verbose)
         self.cadd_vars = self.ip.get_cadd_vars()
-
         self._prepare_data()
 
     def _prepare_data(self):
@@ -66,22 +94,20 @@ class Train:
                                               verbose=self.verbose)
             self._printf("Data loaded with shape: ", data_to_be_balanced.shape)
             data = self._process_balance_in_the_force(data_to_be_balanced)
-            self._export_balanced(data)
             return data
 
     def _check_output_dir(self):
         if not os.path.isdir(self.output_loc):
             os.makedirs(self.output_loc)
 
-    def _export_balanced(self, balanced_ds):
-        output_name = os.path.join(self.output_loc,
-                                   'train_balanced_dataset.tsv.gz')
-        balanced_ds.to_csv(output_name,
+    def _export_dataset(self, dataset, name, feature):
+        output_name = os.path.join(self.output_loc, (name+'.tsv.gz'))
+        dataset.to_csv(output_name,
                            sep='\t',
                            compression='gzip',
                            index=False)
-        self._printf("Exported balanced ds: \n{}\n(Shape={})".format(
-            output_name, balanced_ds.shape), flush=True)
+        self._printf("Exported {}: \n{}\n(Shape={})".format(feature,
+            output_name, dataset.shape), flush=True)
 
     def _process_balance_in_the_force(self, dataset: pd.DataFrame):
         palpatine = dataset[dataset['binarized_label'] == 1]
@@ -163,6 +189,16 @@ class Train:
             (variants['max_AF'] >= lower)
         ).dropna(how='all')
         return vars_in_range
+
+    def _split_data(self):
+        train, test = train_test_split(self.data, test_size=0.2, random_state=4)
+        self._export_dataset(dataset=train,
+                             name='splitted_train_dataset',
+                             feature='splitted train')
+        self._export_dataset(dataset=test,
+                             name='splitted_test_dataset',
+                             feature='splitted test')
+        self.data = train
 
     def train(self):
         param_dist = {
@@ -291,6 +327,11 @@ class ArgumentSupporter:
                               action='store_true',
                               help='Prints messages if called.')
 
+        optional.add_argument('-s',
+                              '--split',
+                              action='store_true',
+                              help='Split data before machine learning, to create an independent test set.')
+
         return parser
 
     def get_argument(self, argument_key):
@@ -320,10 +361,16 @@ def main():
         balanced = str(balanced[0])
     verbose = arguments.get_argument('verbose')
     default = arguments.get_argument('default')
+    split = arguments.get_argument('split')
     _check_input(input_loc, balanced)
-    train = Train(data_loc=input_loc, output_loc=output_loc,
-                  verbose=verbose, default=default,
-                  balanced_set=balanced)
+    train = Train(
+        data_loc=input_loc,
+        output_loc=output_loc,
+        verbose=verbose,
+        default=default,
+        balanced_set=balanced,
+        split=split
+    )
     train.train()
 
 

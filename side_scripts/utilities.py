@@ -15,6 +15,7 @@ from sklearn.metrics import roc_auc_score, f1_score, precision_score, \
 import pickle
 from matplotlib import pyplot as plt
 from bokeh.palettes import viridis
+import warnings
 
 # https://gist.github.com/deekayen/4148741#file-1-1000-txt
 
@@ -57,6 +58,7 @@ def translate_genepanels_to_engrish(UMCG_Genepanels):
 
 
 genepanels = translate_genepanels_to_engrish(genepanels)
+
 
 # Define function to perform Shapiro-Wilk, Kolmogorov-Smirnov,
 # Wilcoxon-/Mann-Whitney U -test, and a pearson correlation test.
@@ -383,66 +385,119 @@ def genepanel_analysis(genepanels, data, is_balanced_loc=False):
             'Pathogenic': 1,
             'Benign': 0
         }, inplace=True)
+        shortened_genepanel_dict = {}
+        for category, panel_genes in genepanels.items():
+            if category not in shortened_genepanel_dict.keys():
+                shortened_genepanel_dict[category] = []
+            for panel, genes in panel_genes.items():
+                for gene in genes:
+                    if gene not in shortened_genepanel_dict[category]:
+                        shortened_genepanel_dict[category].append(gene)
+
+    counting_df = pd.DataFrame(
+        columns=[
+            'category',
+            'n_benign',
+            'n_malign',
+            'n_tot',
+            'n_train'
+        ]
+    )
+
+    if is_balanced_loc:
+        for category, genes in shortened_genepanel_dict.items():
+            subset_balanced = balanced_ds[balanced_ds['GeneName'].isin(genes)]
+            n_benign = subset_balanced[subset_balanced['label'] == 0].shape[0]
+            n_malign = subset_balanced[subset_balanced['label'] == 1].shape[0]
+            n_tot = n_benign + n_malign
+            n_train = subset_balanced.shape[0]
+            counting_df = counting_df.append(
+                pd.DataFrame(
+                    {
+                        'category': category,
+                        'n_benign': n_benign,
+                        'n_malign': n_malign,
+                        'n_tot': n_tot,
+                        'n_train': n_train
+                    }, index=[0]
+                ), ignore_index=True
+            )
 
     for category, panel_genes in genepanels.items():
         for panel, genes in panel_genes.items():
             subset = data[data['gene'].isin(genes)]
             x = np.array(subset['auc'])
-            x_mean = x.mean()
-            x_std = x.std()
-            if is_balanced_loc:
-                subset_balanced = balanced_ds[balanced_ds['GeneName'].isin(genes)]
-                n_benign = subset_balanced[subset_balanced['label'] == 0].shape[0]
-                n_malign = subset_balanced[subset_balanced['label'] == 1].shape[0]
-                n_tot = n_benign + n_malign
-                n_train = subset_balanced.shape[0]
+            if x.size > 0:
+                x_mean = x.mean()
+                x_std = x.std()
             else:
+                x_mean = np.NaN
+                x_std = np.NaN
+            if not is_balanced_loc:
                 n_benign = subset['n_benign'].sum()
                 n_malign = subset['n_malign'].sum()
                 n_tot = n_benign + n_malign
                 n_train = subset['n_train'].sum()
+                counting_df = counting_df.append(
+                    pd.DataFrame(
+                        {
+                            'category': category,
+                            'n_benign': n_benign,
+                            'n_malign': n_malign,
+                            'n_tot': n_tot,
+                            'n_train': n_train
+                        }, index=[0]
+                    ), ignore_index=True
+                )
             genepanel_df = genepanel_df.append(
                 pd.DataFrame(
                     {
                         'category': [category],
                         'panel': [panel],
                         'auc': [x_mean],
-                        'std': [x_std],
-                        'n_benign': [n_benign],
-                        'n_malign': [n_malign],
-                        'n_tot': [n_tot],
-                        'n_train': [n_train]
+                        'std': [x_std]
                     }, index=[0]
                 ), ignore_index=True
             )
     mann_whitney_cats = ['two-sided', 'less', 'greater']
     return_df = pd.DataFrame(
-        columns=mann_whitney_cats + ['category', 'compared_to', 'mean', 'std',
-                                     'n_benign','n_malign','n_tot','n_train'])
+        columns=mann_whitney_cats + ['category', 'compared_to', 'mean', 'std'])
     for category in genepanel_df['category'].unique():
         subset = genepanel_df[genepanel_df['category'] == category]
         x = np.array(subset['auc'])
         y = np.array(genepanel_df[genepanel_df['category'] != category]['auc'])
+        if x.size > 0:
+            if np.isnan(x).all():
+                x_mean = np.NaN
+                x_std = np.NaN
+            else:
+                x_mean = np.nanmean(x)
+                x_std = np.nanstd(x)
+        else:
+            x_mean = np.NaN
+            x_std = np.NaN
         output = {'category': ['all'],
                   'compared_to': [category],
-                  'two-sided': None,
-                  'less': None,
-                  'greater': None,
-                  'mean': [x.mean()],
-                  'std': [x.std()],
-                  'n_benign': [int(subset['n_benign'].sum())],
-                  'n_malign': [int(subset['n_malign'].sum())],
-                  'n_tot': [int(subset['n_tot'].sum())],
-                  'n_train': [int(subset['n_train'].sum())]
+                  'two-sided': np.NaN,
+                  'less': np.NaN,
+                  'greater': np.NaN,
+                  'mean': [x_mean],
+                  'std': [x_std]
                   }
-        for alternative in mann_whitney_cats:
-            output[alternative] = [stats.mannwhitneyu(
-                x, y, alternative=alternative)[1]]
+        if not np.isnan(x_mean):
+            for alternative in mann_whitney_cats:
+                output[alternative] = [stats.mannwhitneyu(
+                    x, y, alternative=alternative)[1]]
+        else:
+            warnings.warn(f"Category {category} did not contain enough datapoints for Mann-Whitney analysis!")
         return_df = return_df.append(
             pd.DataFrame(
                 output, index=[0]
             ), ignore_index=True
         )
+
+    if is_balanced_loc:
+        return_df = return_df.merge(counting_df, left_on='compared_to', right_on='category')
     return return_df
 
 
@@ -596,7 +651,12 @@ def read_capice_output(capice: str):
                          low_memory=False)
     output[['chr', 'pos', 'ref', 'alt']] = output['chr_pos_ref_alt'].str.split(
         '_', expand=True)
-    output['pos'] = output['pos'].astype(np.int64)
+    output['chr'] = output['chr'].astype(np.object)
+    try:
+        output['pos'] = output['pos'].astype(np.int64)
+    except ValueError:
+        output['pos'] = output['pos'].astype(np.float64)
+        output['pos'] = output['pos'].astype(np.int64)
     output.drop(columns=['chr_pos_ref_alt'], inplace=True)
     return output
 
@@ -632,8 +692,9 @@ def auc_analysis_function(train_output: pd.DataFrame,
                                  inplace=True)
     y_true_train = np.array(train_merge['label'])
     y_pred_train = np.array(train_merge['probabilities'])
-    print(f"AUC analysis of the training dataset reveals AUC: "
-          f"{roc_auc_score(y_true=y_true_train, y_score=y_pred_train)}")
+    if y_pred_train.size > 1:
+        print(f"AUC analysis of the training dataset reveals AUC: "
+             f"{roc_auc_score(y_true=y_true_train, y_score=y_pred_train)}")
 
     # Now the test dataset
     test_merge = test_output.merge(test_input)
@@ -654,21 +715,58 @@ def auc_analysis_function(train_output: pd.DataFrame,
         return train_merge, test_merge
 
 
+def _full_auc_analysis_read_train(loc):
+    dataset = pd.read_csv(loc, sep='\t', low_memory=False,
+                          usecols=['#Chrom', 'Pos', 'Ref', 'Alt', 'GeneName', 'Consequence'])
+    dataset.rename(
+        columns={'#Chrom': 'chr',
+                 'Pos': 'pos',
+                 'Ref': 'ref',
+                 'Alt': 'alt'},
+        inplace=True
+    )
+    return dataset
+
+
+def _full_auc_analysis_drop_dupes_func(dataset, trainset):
+    dataset['kind'] = 'o'
+    trainset['kind'] = 't'
+    trainset[['PHRED', 'probabilities', 'prediction', 'combined_prediction']] = np.NaN
+    merge = dataset.append(trainset, ignore_index=True)
+    merge.drop_duplicates(subset=['chr','pos','ref','alt'], inplace=True, ignore_index=True, keep=False)
+    merge = merge[merge['kind'] == 'o']
+    merge.drop('kind', axis=1, inplace=True)
+    return merge
+
+
 def full_auc_analysis(curr_setup, train_loc,
                       test_loc, auc_analysis_name,
                       training_set_loc=False,
-                      model=False):
+                      model=False,
+                      filter_out=False):
     hyperparameters = ['learning_rate', 'n_estimators', 'max_depth']
+    export_hyperparameters = {}
     if model:
         loaded_model = pickle.load(open(model, 'rb'))
         for parameter in hyperparameters:
             print(f"Parameter {parameter} is "
                   f"set to {loaded_model.get_params()[parameter]}")
+            if parameter not in export_hyperparameters.keys():
+                export_hyperparameters[parameter] = loaded_model.get_params()[parameter]
+    export_name = '_'.join(train_loc.split('_')[-3:-1]).split("/")[-1:][0] + '.json'
+    export_loc = os.path.join('./not_saving_directory', export_name)
+    if not os.path.isfile(export_loc):
+        with open(export_loc, 'w+') as json_file:
+            json.dump(export_hyperparameters, json_file)
     if training_set_loc:
         training_set = pd.read_csv(training_set_loc, sep='\t', low_memory=False)
         print(f'There are {training_set.shape[0]} samples in the training set.')
     train_output = read_capice_output(train_loc)
     test_output = read_capice_output(test_loc)
+    if filter_out:
+        xgboost_trainset = _full_auc_analysis_read_train(filter_out)
+        train_output = _full_auc_analysis_drop_dupes_func(train_output, xgboost_trainset)
+        test_output = _full_auc_analysis_drop_dupes_func(test_output, xgboost_trainset)
     train_output, test_output = auc_analysis_function(train_output,
                                                       test_output,
                                                       return_value=True)
@@ -697,7 +795,7 @@ def full_auc_analysis(curr_setup, train_loc,
                                  colormap='viridis', figsize=(10, 5),
                                  title=f'Mann-Whitney analysis of: {curr_setup}',
                                  ax=axes[0])
-    axes[0].hlines(y=0.05, xmin=-10, xmax=100)
+    axes[0].hlines(y=0.05, xmin=-10, xmax=100, colors='k')
     axes[0].set_ylabel('P-value')
     axes[0].set_xlabel('Panel')
     axes[0].legend(loc='upper right', bbox_to_anchor=(1.2, 1))
@@ -707,7 +805,6 @@ def full_auc_analysis(curr_setup, train_loc,
                      ls='None', color='k', fmt='o',
                      capsize=0, elinewidth=3)
     axes[1].set_ylabel('AUC')
-    # axes[1].set_ylim((0.8, 1.01))
     plt.xticks(rotation=90)
     plt.show()
     categories = umcg_genepanel_analysis['compared_to'].unique()
@@ -754,5 +851,3 @@ def full_auc_analysis(curr_setup, train_loc,
     plt.xlabel('n_malign')
     plt.ylabel('AUC')
     plt.show()
-
-
