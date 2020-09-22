@@ -19,6 +19,10 @@ import warnings
 
 # https://gist.github.com/deekayen/4148741#file-1-1000-txt
 
+nsd = os.path.join('.', 'not_saving_directory')
+if not os.path.exists(nsd):
+    os.mkdir(nsd)
+
 common_used_words = []
 with open('/home/rjsietsma/Documents/1-1000.txt') as file:
     lines = file.readlines()
@@ -667,7 +671,7 @@ def auc_analysis_function(train_output: pd.DataFrame,
     train_input = pd.read_csv('./datafiles/train.txt.gz',
                               sep='\t',
                               low_memory=False,
-                              usecols=['#Chrom', 'Pos', 'Ref', 'Alt', 'label'])
+                              usecols=['#Chrom', 'Pos', 'Ref', 'Alt', 'label', 'sample_weight'])
     train_input.rename(columns={
         '#Chrom': 'chr',
         'Pos': 'pos',
@@ -685,6 +689,7 @@ def auc_analysis_function(train_output: pd.DataFrame,
         'Ref': 'ref',
         'Alt': 'alt'
     }, inplace=True)
+    test_input['sample_weight'] = np.NaN
     test_input['pos'] = test_input['pos'].astype(np.int64)
     # First, the train dataset:
     train_merge = train_output.merge(train_input)
@@ -774,6 +779,11 @@ def full_auc_analysis(curr_setup, train_loc,
     test_output['source'] = 'test'
     full = train_output.append(test_output)
     full.drop_duplicates(subset=['chr', 'pos', 'ref', 'alt'], inplace=True)
+    if full['sample_weight'].unique().size > 1:
+        sw = np.array(full['sample_weight'])
+        plt.hist(sw[~np.isnan(sw)])
+        plt.title('Histogram of trustworthy test samples')
+        plt.show()
     auc_analysis = analyze_auc_per_gene(
         full,
         auc_analysis_name
