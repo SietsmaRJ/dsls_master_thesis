@@ -47,7 +47,7 @@ def translate_genepanels_to_engrish(UMCG_Genepanels):
         "Metabole & Leverziekten": "Metabolic",
         "Hyper-/ hypofosfatemie": "Hyper-/ hypophosphatemia",
         "Mitochondriele aandoeningen": "Mitochondria",
-        "Fertiliteit": "Fertility",
+        "Fertiliteit": "Preconception",
         "Aangeboren hartafwijkingen": "Congenital heart defects",
         "Erfelijke Kanker": "Hereditary cancer",
         "Cardiomyopathie bij kinderen": "Early onset cardiomyopathy",
@@ -220,7 +220,7 @@ def plot_results(source, n=10, print_messages=False):
                toolbar_location='right', toolbar_sticky=False, )
     if n > 5:
         p.scatter(x='AUC', y='Adjusted_P-value', source=source_bokeh, size=10,
-                  color='color')
+                  color='color', legend=category)
     else:
         p.scatter(x='AUC', y='Adjusted_P-value', source=source_bokeh, size=10,
                   color='color', legend=category)
@@ -402,7 +402,7 @@ def genepanel_analysis(genepanels, data, is_balanced_loc=False):
         columns=[
             'category',
             'n_benign',
-            'n_malign',
+            'n_patho',
             'n_tot',
             'n_train'
         ]
@@ -412,15 +412,15 @@ def genepanel_analysis(genepanels, data, is_balanced_loc=False):
         for category, genes in shortened_genepanel_dict.items():
             subset_balanced = balanced_ds[balanced_ds['GeneName'].isin(genes)]
             n_benign = subset_balanced[subset_balanced['label'] == 0].shape[0]
-            n_malign = subset_balanced[subset_balanced['label'] == 1].shape[0]
-            n_tot = n_benign + n_malign
+            n_patho = subset_balanced[subset_balanced['label'] == 1].shape[0]
+            n_tot = n_benign + n_patho
             n_train = subset_balanced.shape[0]
             counting_df = counting_df.append(
                 pd.DataFrame(
                     {
                         'category': category,
                         'n_benign': n_benign,
-                        'n_malign': n_malign,
+                        'n_patho': n_patho,
                         'n_tot': n_tot,
                         'n_train': n_train
                     }, index=[0]
@@ -439,15 +439,15 @@ def genepanel_analysis(genepanels, data, is_balanced_loc=False):
                 x_std = np.NaN
             if not is_balanced_loc:
                 n_benign = subset['n_benign'].sum()
-                n_malign = subset['n_malign'].sum()
-                n_tot = n_benign + n_malign
+                n_patho = subset['n_patho'].sum()
+                n_tot = n_benign + n_patho
                 n_train = subset['n_train'].sum()
                 counting_df = counting_df.append(
                     pd.DataFrame(
                         {
                             'category': category,
                             'n_benign': n_benign,
-                            'n_malign': n_malign,
+                            'n_patho': n_patho,
                             'n_tot': n_tot,
                             'n_train': n_train
                         }, index=[0]
@@ -514,7 +514,7 @@ def analyze_auc_per_gene(dataset, output_name):
         print(f"File {auc_analysis_output_filename} not found, creating.")
         auc_analysis = pd.DataFrame(columns=['gene', 'auc', 'f1', 'recall',
                                              'fpr', 'precision',
-                                             'n_benign', 'n_malign',
+                                             'n_benign', 'n_patho',
                                              'n_tot', 'n_train', 'n_test'])
         dataset['label'].replace({
             'Pathogenic': 1,
@@ -549,7 +549,7 @@ def analyze_auc_per_gene(dataset, output_name):
                 fpr = 1 - recall
                 precision = precision_score(y_true, y_pred_label, zero_division=0)
                 n_benign = y_true[y_true == 0].size
-                n_malign = y_true[y_true == 1].size
+                n_patho = y_true[y_true == 1].size
                 n_tot = y_true.size
             else:
                 continue
@@ -562,7 +562,7 @@ def analyze_auc_per_gene(dataset, output_name):
                     'fpr': [fpr],
                     'precision': [precision],
                     'n_benign': [n_benign],
-                    'n_malign': [n_malign],
+                    'n_patho': [n_patho],
                     'n_tot': [n_tot],
                     'n_train': [n_train],
                     'n_test': [n_test]
@@ -782,7 +782,8 @@ def full_auc_analysis(curr_setup, train_loc,
     if full['sample_weight'].unique().size > 1:
         sw = np.array(full['sample_weight'])
         plt.hist(sw[~np.isnan(sw)])
-        plt.title('Histogram of trustworthy test samples')
+        plt.title('Distribution of sample weights')
+        plt.xticks(np.arange(0.8, 1.01, 0.1), np.arange(0.8, 1.01, 0.1))
         plt.show()
     auc_analysis = analyze_auc_per_gene(
         full,
@@ -795,6 +796,13 @@ def full_auc_analysis(curr_setup, train_loc,
         auc_analysis,
         is_balanced_loc=training_set_loc
     )
+    umcg_genepanel_analysis_export_loc = './not_saving_directory/umcg_genepanel_results'
+    if not os.path.isdir(umcg_genepanel_analysis_export_loc):
+        os.makedirs(umcg_genepanel_analysis_export_loc)
+    umcg_genepanel_analysis.to_csv(
+        os.path.join(umcg_genepanel_analysis_export_loc, auc_analysis_name),
+        sep=',',
+        index=False)
     print(f"UMCG genepanels Mann-Whitney analysis: \n"
           f"{umcg_genepanel_analysis}")
     print(f"The mean of the M-W analysis AUC: "
@@ -852,12 +860,12 @@ def full_auc_analysis(curr_setup, train_loc,
     for compared_to in umcg_genepanel_analysis['compared_to'].values:
         subset = umcg_genepanel_analysis[
             umcg_genepanel_analysis['compared_to'] == compared_to]
-        x = subset['n_malign'].values
+        x = subset['n_patho'].values
         y = subset['mean'].values
         color = subset['color'].values
         plt.scatter(x, y, c=color, label=compared_to)
     plt.legend(loc='lower right', bbox_to_anchor=(1.6, -0.28))
-    plt.title(f'AUC vs malign plot of: {curr_setup}')
-    plt.xlabel('n_malign')
+    plt.title(f'AUC vs patho plot of: {curr_setup}')
+    plt.xlabel('n_patho')
     plt.ylabel('AUC')
     plt.show()
