@@ -784,6 +784,8 @@ def full_auc_analysis(curr_setup, train_loc,
         plt.hist(sw[~np.isnan(sw)])
         plt.title('Distribution of sample weights')
         plt.xticks(np.arange(0.8, 1.01, 0.1), np.arange(0.8, 1.01, 0.1))
+        plt.xlabel('Sample weight')
+        plt.ylabel('Counts')
         plt.show()
     auc_analysis = analyze_auc_per_gene(
         full,
